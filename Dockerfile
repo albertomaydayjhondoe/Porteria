@@ -1,11 +1,12 @@
-FROM ruby:3.0-alpine
+FROM ruby:3.2-alpine
 
-# Install dependencies
+# Install dependencies including gcompat for better binary compatibility
 RUN apk add --no-cache \
     build-base \
     git \
     nodejs \
-    npm
+    npm \
+    gcompat
 
 # Set working directory
 WORKDIR /app
@@ -16,11 +17,14 @@ RUN gem install jekyll bundler
 # Copy Gemfile
 COPY Gemfile* ./
 
-# Install gems
-RUN bundle install
+# Clean bundle cache and install gems fresh
+RUN rm -rf /usr/local/bundle/cache && bundle install --full-index
 
 # Copy project files
 COPY . .
+
+# Build the Jekyll site
+RUN bundle exec jekyll build
 
 # Expose port
 EXPOSE 4000

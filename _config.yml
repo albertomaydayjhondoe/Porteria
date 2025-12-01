@@ -30,6 +30,9 @@ exclude:
   - vendor/ruby/
   - paperboy/
   - setup_paperboy_local.sh
+  - porteria.venv/
+  - Dockerfile
+  - docker-compose.yml
 
 # Collections
 collections:
