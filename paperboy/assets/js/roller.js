@@ -4,17 +4,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!roller) return;
 
   let page = 1, per = 40, loading = false, end = false;
-  const params = new URLSearchParams(location.search);
-  const currentTag = params.get('tag');
 
   async function fetchPage() {
     if (loading || end) return;
     loading = true;
-    let url = `/api/api-tiras.php?action=list&page=${page}&per=${per}`;
-    if (currentTag) {
-      url += `&tag=${encodeURIComponent(currentTag)}`;
-    }
-    const resp = await fetch(url);
+    const resp = await fetch(`/api/api-tiras.php?action=list&page=${page}&per=${per}`);
     const json = await resp.json();
     if (!json.ok) { loading = false; return; }
     const items = json.data;
@@ -33,14 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="meta">${item.date}</div>
     `;
     div.addEventListener('click', () => {
-      const url = new URL(window.location);
-      url.searchParams.set('date', item.date);
-      if (currentTag) {
-        url.searchParams.set('tag', currentTag);
-      } else {
-        url.searchParams.delete('tag');
-      }
-      window.location.href = url.toString();
+      window.location.href = '/?date=' + item.date;
     });
     roller.appendChild(div);
     lazyObserve(div.querySelector('img'));
@@ -94,6 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await fetchPage();
 
+  const params = new URLSearchParams(location.search);
   const qdate = params.get('date');
   if (qdate) {
     setTimeout(() => {

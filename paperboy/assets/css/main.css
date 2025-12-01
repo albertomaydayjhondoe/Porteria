@@ -17,10 +17,10 @@ body{margin:0;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antia
 .brand .subtitle{margin:0;font-size:13px;color:#666;font-style:italic}
 .main-nav a{margin-left:16px;color:var(--ink);text-decoration:none;font-weight:600}
 .tira-dia{margin-top:20px}
-.tira-card{background:#fff;padding:18px;border:1px solid #e6e6e6;border-radius:6px; position: relative;}
+.tira-card{background:#fff;padding:18px;border:1px solid #e6e6e6;border-radius:6px}
 .tira-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .tira-meta h2{font-family: "Playfair Display", serif;margin:0;font-size:20px}
-.tira-image-vertical{display:flex;justify-content:center; cursor: zoom-in;}
+.tira-image-vertical{display:flex;justify-content:center}
 .tira-image-vertical img{max-width:100%;height:auto;border:1px solid #ddd;box-shadow:0 1px 0 rgba(0,0,0,0.03)}
 .tira-nav{display:flex;justify-content:center;margin-top:12px}
 .btn{background:#000;color:#fff;border:none;padding:8px 14px;margin:0 6px;border-radius:4px;cursor:pointer}
@@ -33,62 +33,6 @@ body{margin:0;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antia
 .site-footer{display:flex;justify-content:space-between;align-items:center;padding:18px;border-top:1px solid #eee;margin-top:30px}
 .footer-right span{display:inline-block;background:#222;color:#fff;padding:4px 8px;border-radius:3px;margin-left:6px;font-size:12px}
 .empty{padding:40px;text-align:center;color:#777}
-
-.tags-list {
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.tag {
-  display: inline-block;
-  background: var(--muted);
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 13px;
-  text-decoration: none;
-  color: #555;
-  transition: all 0.2s;
-}
-.tag:hover, .tag.active {
-  background: var(--accent);
-  color: var(--bg);
-}
-.tira-tags {
-  margin-top: 15px;
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-/* Modal Zoom */
-.zoom-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: zoom-out;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s, visibility 0.3s;
-}
-.zoom-modal.visible {
-  opacity: 1;
-  visibility: visible;
-}
-.zoom-modal img {
-  max-width: 95%;
-  max-height: 95%;
-  object-fit: contain;
-}
 
 /* Responsive */
 @media (max-width:720px){
