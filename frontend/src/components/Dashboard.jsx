@@ -15,6 +15,17 @@ const Dashboard = () => {
 
   const fetchProjects = async () => {
     try {
+      // Try backend API first
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/projects`)
+      const result = await response.json()
+      
+      if (result.success && result.data) {
+        setProjects(result.data)
+        return
+      }
+      
+      // Fallback to Supabase
       const { data, error } = await supabase
         .from('projects')
         .select('*')

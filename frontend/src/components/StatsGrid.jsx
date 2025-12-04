@@ -16,18 +16,26 @@ const StatsGrid = () => {
 
   const fetchStats = async () => {
     try {
-      // Fetch projects count
+      // Try backend API first
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiUrl}/api/stats`)
+      const result = await response.json()
+      
+      if (result.success && result.data) {
+        setStats(result.data)
+        return
+      }
+      
+      // Fallback to Supabase
       const { count: projectsCount } = await supabase
         .from('projects')
         .select('*', { count: 'exact', head: true })
 
-      // Fetch active projects count
       const { count: activeCount } = await supabase
         .from('projects')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'active')
 
-      // Fetch collaborators count
       const { count: collaboratorsCount } = await supabase
         .from('collaborators')
         .select('*', { count: 'exact', head: true })

@@ -16,7 +16,24 @@ const ProjectDetail = () => {
 
   const fetchProjectDetails = async () => {
     try {
+      // Try backend API first
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+      
       // Fetch project details
+      const projectResponse = await fetch(`${apiUrl}/api/projects/${id}`)
+      const projectResult = await projectResponse.json()
+      
+      // Fetch collaborators
+      const collaboratorsResponse = await fetch(`${apiUrl}/api/collaborators/project/${id}`)
+      const collaboratorsResult = await collaboratorsResponse.json()
+      
+      if (projectResult.success && projectResult.data) {
+        setProject(projectResult.data)
+        setCollaborators(collaboratorsResult.data || [])
+        return
+      }
+      
+      // Fallback to Supabase
       const { data: projectData, error: projectError } = await supabase
         .from('projects')
         .select('*')
@@ -25,7 +42,6 @@ const ProjectDetail = () => {
 
       if (projectError) throw projectError
 
-      // Fetch collaborators
       const { data: collaboratorsData, error: collaboratorsError } = await supabase
         .from('collaborators')
         .select('*')
