@@ -1,8 +1,12 @@
-# 📰 Paperboy — La Portería
+# 📰 Paperboy La Portería
 
 ![GitHub Pages](https://github.com/albertomaydayjhondoe/Porteria/workflows/Deploy%20Static%20Site%20to%20GitHub%20Pages/badge.svg)
 
-Blog de tiras cómicas diarias con roller horizontal concatenado y tira del día vertical. Una aplicación moderna construida con React, Supabase y desplegada en GitHub Pages.
+Blog de tiras cómicas diarias que retrata la vida cotidiana con humor y reflexión. Una aplicación vanilla moderna desplegada en GitHub Pages.
+
+## 🚀 Demo en Vivo
+- **GitHub Pages:** https://albertomaydayjhondoe.github.io/Porteria/
+- **Lovable Dev:** https://lovable.dev/projects/e480bda7-d68b-4555-b924-01f8fe2a77f7
 
 ## 🌟 Características
 

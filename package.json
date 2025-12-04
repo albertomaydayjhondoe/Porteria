@@ -1,13 +1,29 @@
 {
-  "name": "daily-paper-comics",
-  "version": "1.0.0",
-  "description": "Daily Paper Comics - Paperboy La Portería",
+  "name": "paperboy-la-porteria",
+  "version": "2.0.0",
+  "description": "Blog de tiras cómicas diarias - Paperboy La Portería",
   "main": "index.html",
+  "homepage": "https://albertomaydayjhondoe.github.io/Porteria/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/albertomaydayjhondoe/Porteria.git"
+  },
   "scripts": {
+    "start": "npx http-server . -p 3000",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && cp dist/* docs/"
   },
+  "keywords": [
+    "comics",
+    "blog",
+    "paperboy",
+    "vanilla-js",
+    "github-pages"
+  ],
+  "author": "Sampayo",
+  "license": "MIT",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
