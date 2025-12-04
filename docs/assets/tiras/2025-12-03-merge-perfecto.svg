@@ -1,0 +1,27 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#fafafa"/>
+  <rect x="20" y="20" width="360" height="260" fill="white" stroke="#e2e8f0" stroke-width="2" rx="8"/>
+  
+  <!-- Comic panels -->
+  <rect x="40" y="50" width="140" height="100" fill="#f0fdf4" stroke="#22c55e" stroke-width="1" rx="4"/>
+  <rect x="200" y="50" width="140" height="100" fill="#fef2f2" stroke="#ef4444" stroke-width="1" rx="4"/>
+  <rect x="120" y="170" width="140" height="80" fill="#f3e8ff" stroke="#a855f7" stroke-width="1" rx="4"/>
+  
+  <!-- Git/Code symbols -->
+  <text x="110" y="90" text-anchor="middle" font-family="monospace" font-size="12" fill="#16a34a">git merge</text>
+  <text x="110" y="105" text-anchor="middle" font-family="monospace" font-size="10" fill="#16a34a">✓ success</text>
+  
+  <text x="270" y="90" text-anchor="middle" font-family="monospace" font-size="12" fill="#dc2626">conflicts: 0</text>
+  <text x="270" y="105" text-anchor="middle" font-family="monospace" font-size="10" fill="#dc2626">❌ errors: 0</text>
+  
+  <!-- Speech bubble -->
+  <ellipse cx="190" cy="200" rx="60" ry="25" fill="white" stroke="#64748b"/>
+  <text x="190" y="195" text-anchor="middle" font-family="Arial" font-size="9" fill="#1e293b">¡El merge perfecto</text>
+  <text x="190" y="207" text-anchor="middle" font-family="Arial" font-size="9" fill="#1e293b">existe!</text>
+  
+  <!-- Title -->
+  <text x="200" y="35" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#1e293b">El Merge Perfecto</text>
+  
+  <!-- Date -->
+  <text x="350" y="290" text-anchor="end" font-family="Arial" font-size="10" fill="#64748b">3 Dec 2025</text>
+</svg>

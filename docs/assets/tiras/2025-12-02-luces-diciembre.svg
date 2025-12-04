@@ -1,0 +1,35 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#0f172a"/>
+  <rect x="20" y="20" width="360" height="260" fill="#1e293b" stroke="#334155" stroke-width="2" rx="8"/>
+  
+  <!-- Christmas lights string -->
+  <line x1="40" y1="60" x2="360" y2="60" stroke="#fbbf24" stroke-width="2"/>
+  
+  <!-- Colorful bulbs -->
+  <circle cx="70" cy="60" r="8" fill="#ef4444"/>
+  <circle cx="120" cy="60" r="8" fill="#22c55e"/>
+  <circle cx="170" cy="60" r="8" fill="#3b82f6"/>
+  <circle cx="220" cy="60" r="8" fill="#f59e0b"/>
+  <circle cx="270" cy="60" r="8" fill="#ec4899"/>
+  <circle cx="320" cy="60" r="8" fill="#10b981"/>
+  
+  <!-- Window frame -->
+  <rect x="80" y="100" width="240" height="140" fill="#0f172a" stroke="#64748b" stroke-width="3" rx="4"/>
+  <line x1="200" y1="100" x2="200" y2="240" stroke="#64748b" stroke-width="2"/>
+  <line x1="80" y1="170" x2="320" y2="170" stroke="#64748b" stroke-width="2"/>
+  
+  <!-- Stars outside -->
+  <circle cx="50" cy="120" r="1" fill="#fbbf24"/>
+  <circle cx="340" cy="140" r="1" fill="#fbbf24"/>
+  <circle cx="360" cy="110" r="1" fill="#fbbf24"/>
+  
+  <!-- Speech bubble -->
+  <ellipse cx="200" cy="200" rx="70" ry="20" fill="white" stroke="#64748b"/>
+  <text x="200" y="205" text-anchor="middle" font-family="Arial" font-size="10" fill="#1e293b">Diciembre ya está aquí...</text>
+  
+  <!-- Title -->
+  <text x="200" y="35" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#f1f5f9">Luces de Diciembre</text>
+  
+  <!-- Date -->
+  <text x="350" y="290" text-anchor="end" font-family="Arial" font-size="10" fill="#94a3b8">2 Dec 2025</text>
+</svg>
