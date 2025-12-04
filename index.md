@@ -1,7 +1,3 @@
 ---
-layout: custom
+layout: paperboy
 ---
-
-# Bienvenido a Paperboy — La Portería
-
-Proyecto de tiras cómicas diarias funcionando ahora con Jekyll.

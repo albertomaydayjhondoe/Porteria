@@ -10,7 +10,7 @@ github_username: albertomaydayjhondoe
 
 # Build settings
 markdown: kramdown
-# theme: minima  # Disabled to use custom layouts
+theme: null  # No theme - use custom layouts only
 plugins:
   - jekyll-feed
   - jekyll-sitemap
