@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paperboy — La Portería</title>
     <meta name="description" content="Blog de tiras cómicas diarias - Paperboy La Portería">
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/react-router-dom@6.8.0/dist/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -472,7 +471,6 @@
 
     <script type="text/babel">
         const { useState, useEffect } = React;
-        const { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } = ReactRouterDOM;
         
         // Supabase configuration
         const SUPABASE_URL = 'https://sxjwoyxwgmmsaqczvjpd.supabase.co';
@@ -584,39 +582,40 @@
         );
 
         // Header Component
-        const Header = () => {
-            const location = useLocation();
-            
-            return (
-                <header className="header">
-                    <div className="container">
-                        <div className="header-content">
-                            <Link to="/" className="logo">Paperboy</Link>
-                            <nav className="nav">
-                                <Link 
-                                    to="/" 
-                                    className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
-                                >
-                                    Inicio
-                                </Link>
-                                <Link 
-                                    to="/archivo" 
-                                    className={`nav-link ${location.pathname === '/archivo' ? 'active' : ''}`}
-                                >
-                                    Archivo
-                                </Link>
-                                <Link 
-                                    to="/admin" 
-                                    className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}
-                                >
-                                    Admin
-                                </Link>
-                            </nav>
-                        </div>
+        const Header = ({ currentPage, onPageChange }) => (
+            <header className="header">
+                <div className="container">
+                    <div className="header-content">
+                        <button onClick={() => onPageChange('home')} className="logo" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
+                            Paperboy
+                        </button>
+                        <nav className="nav">
+                            <button 
+                                onClick={() => onPageChange('home')}
+                                className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}
+                                style={{ border: 'none', background: 'none' }}
+                            >
+                                Inicio
+                            </button>
+                            <button 
+                                onClick={() => onPageChange('archivo')}
+                                className={`nav-link ${currentPage === 'archivo' ? 'active' : ''}`}
+                                style={{ border: 'none', background: 'none' }}
+                            >
+                                Archivo
+                            </button>
+                            <button 
+                                onClick={() => onPageChange('admin')}
+                                className={`nav-link ${currentPage === 'admin' ? 'active' : ''}`}
+                                style={{ border: 'none', background: 'none' }}
+                            >
+                                Admin
+                            </button>
+                        </nav>
                     </div>
-                </header>
-            );
-        };
+                </div>
+            </header>
+        );
 
         // Hero Component
         const Hero = () => (
@@ -631,7 +630,7 @@
         );
 
         // Home Page Component
-        const HomePage = () => {
+        const HomePage = ({ onPageChange }) => {
             const [latestComic, setLatestComic] = useState(null);
             const [otherComics, setOtherComics] = useState([]);
             const [loading, setLoading] = useState(true);
@@ -665,23 +664,19 @@
 
             if (loading) {
                 return (
-                    <div>
-                        <Header />
-                        <main className="main">
-                            <div className="container">
-                                <Hero />
-                                <div className="loading">
-                                    📚 Cargando tiras cómicas...
-                                </div>
+                    <main className="main">
+                        <div className="container">
+                            <Hero />
+                            <div className="loading">
+                                📚 Cargando tiras cómicas...
                             </div>
-                        </main>
-                    </div>
+                        </div>
+                    </main>
                 );
             }
 
             return (
                 <div>
-                    <Header />
                     <main className="main">
                         <div className="container">
                             <Hero />
@@ -719,7 +714,7 @@
         };
 
         // Archive Page Component
-        const ArchivePage = () => {
+        const ArchivePage = ({ onPageChange }) => {
             const [comics, setComics] = useState([]);
             const [loading, setLoading] = useState(true);
             const [error, setError] = useState(null);
@@ -751,22 +746,18 @@
 
             if (loading) {
                 return (
-                    <div>
-                        <Header />
-                        <main className="main">
-                            <div className="container">
-                                <div className="loading">
-                                    📚 Cargando archivo de tiras...
-                                </div>
+                    <main className="main">
+                        <div className="container">
+                            <div className="loading">
+                                📚 Cargando archivo de tiras...
                             </div>
-                        </main>
-                    </div>
+                        </div>
+                    </main>
                 );
             }
 
             return (
                 <div>
-                    <Header />
                     <main className="main">
                         <div className="container">
                             <section style={{ padding: '40px 0' }}>
@@ -798,7 +789,7 @@
         };
 
         // Admin Page Component
-        const AdminPage = () => {
+        const AdminPage = ({ onPageChange }) => {
             const [user, setUser] = useState(null);
             const [isAdmin, setIsAdmin] = useState(false);
             const [loading, setLoading] = useState(true);
@@ -985,20 +976,15 @@
 
             if (loading) {
                 return (
-                    <div>
-                        <Header />
-                        <div className="admin-container">
-                            <div className="loading">🔐 Verificando autenticación...</div>
-                        </div>
+                    <div className="admin-container">
+                        <div className="loading">🔐 Verificando autenticación...</div>
                     </div>
                 );
             }
 
             if (!user || !isAdmin) {
                 return (
-                    <div>
-                        <Header />
-                        <div className="admin-container">
+                    <div className="admin-container">
                             <h1 className="admin-title">🔐 Panel de Administración</h1>
                             
                             <form onSubmit={handleLogin} className="login-form">
@@ -1040,9 +1026,7 @@
             }
 
             return (
-                <div>
-                    <Header />
-                    <div className="admin-container">
+                <div className="admin-container">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                             <h1 className="admin-title" style={{ margin: 0 }}>🎨 Panel de Admin</h1>
                             <button onClick={handleLogout} className="btn btn-secondary">
@@ -1137,15 +1121,27 @@
         );
 
         // Main App Component
-        const App = () => (
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/archivo" element={<ArchivePage />} />
-                    <Route path="/admin" element={<AdminPage />} />
-                </Routes>
-            </BrowserRouter>
-        );
+        const App = () => {
+            const [currentPage, setCurrentPage] = useState('home');
+
+            const renderPage = () => {
+                switch(currentPage) {
+                    case 'archivo':
+                        return <ArchivePage onPageChange={setCurrentPage} />;
+                    case 'admin':
+                        return <AdminPage onPageChange={setCurrentPage} />;
+                    default:
+                        return <HomePage onPageChange={setCurrentPage} />;
+                }
+            };
+
+            return (
+                <div>
+                    <Header currentPage={currentPage} onPageChange={setCurrentPage} />
+                    {renderPage()}
+                </div>
+            );
+        };
 
         ReactDOM.render(<App />, document.getElementById('root'));
     </script>
