@@ -1,7 +1,7 @@
 {
-  "name": "paperboy-porteria",
+  "name": "daily-paper-comics",
   "version": "1.0.0",
-  "description": "Blog de tiras cómicas diarias - Paperboy La Portería",
+  "description": "Daily Paper Comics - Paperboy La Portería",
   "main": "index.html",
   "scripts": {
     "dev": "vite",
