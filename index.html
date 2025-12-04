@@ -1,239 +1,384 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Paperboy — La Portería</title>
-  <meta name="description" content="Blog de tiras cómicas diarias con roller horizontal concatenado y tira del día vertical. Proyecto ligero con Jekyll.">
-  <style>
-    :root{
-      --bg:#ffffff;
-      --muted:#f4f4f4;
-      --ink:#111;
-      --dark:#222;
-      --accent:#000;
-      --max-width:1100px;
-      --gap:18px;
-      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
-    .container{max-width:var(--max-width);margin:28px auto;padding:0 18px}
-    .site-header{display:flex;justify-content:space-between;align-items:center;padding:20px 18px;border-bottom:1px solid #e6e6e6}
-    .brand h1{margin:0;font-size:24px;letter-spacing:1px}
-    .brand .subtitle{margin:0;font-size:13px;color:#666;font-style:italic}
-    .main-nav a{margin-left:16px;color:var(--ink);text-decoration:none;font-weight:600}
-    .tira-dia{margin-top:20px}
-    .tira-card{background:#fff;padding:18px;border:1px solid #e6e6e6;border-radius:6px; position: relative;}
-    .tira-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .tira-meta h2{font-family: "Playfair Display", serif;margin:0;font-size:20px}
-    .tira-image-vertical{display:flex;justify-content:center; cursor: zoom-in;}
-    .tira-image-vertical img{max-width:100%;height:auto;border:1px solid #ddd;box-shadow:0 1px 0 rgba(0,0,0,0.03)}
-    .tira-nav{display:flex;justify-content:center;margin-top:12px}
-    .btn{background:#000;color:#fff;border:none;padding:8px 14px;margin:0 6px;border-radius:4px;cursor:pointer}
-    .btn:disabled{opacity:.5;cursor:not-allowed}
-    .roller-section{margin-top:28px}
-    .roller{display:flex;gap:10px;overflow-x:auto;padding:12px 6px;border-top:1px solid #eee;border-bottom:1px solid #eee;scroll-behavior:smooth}
-    .roller-item{flex:0 0 auto;width:200px;border:1px solid #eee;background:#fff;padding:8px;border-radius:4px;cursor:pointer;display:flex;flex-direction:column}
-    .roller-item img{width:100%;height:120px;object-fit:cover;border-bottom:1px solid #eee;margin-bottom:8px}
-    .roller-item .meta{font-size:12px;color:#555}
-    .site-footer{display:flex;justify-content:space-between;align-items:center;padding:18px;border-top:1px solid #eee;margin-top:30px}
-    .footer-right span{display:inline-block;background:#222;color:#fff;padding:4px 8px;border-radius:3px;margin-left:6px;font-size:12px}
-    .empty{padding:40px;text-align:center;color:#777}
-
-    .tags-list {
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .tag {
-      display: inline-block;
-      background: var(--muted);
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 13px;
-      text-decoration: none;
-      color: #555;
-      transition: all 0.2s;
-    }
-    .tag:hover, .tag.active {
-      background: var(--accent);
-      color: var(--bg);
-    }
-    .tira-tags {
-      margin-top: 15px;
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    /* Modal Zoom */
-    .zoom-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: zoom-out;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s, visibility 0.3s;
-    }
-    .zoom-modal.visible {
-      opacity: 1;
-      visibility: visible;
-    }
-    .zoom-modal img {
-      max-width: 95%;
-      max-height: 95%;
-      object-fit: contain;
-    }
-
-    /* Responsive */
-    @media (max-width:720px){
-      .roller-item{width:140px}
-      .brand h1{font-size:20px}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paperboy — La Portería</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        .header {
+            background: white;
+            border-bottom: 1px solid #e1e5e9;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: #1a1a1a;
+        }
+        
+        .main {
+            padding: 40px 0;
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+        
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .comic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-bottom: 64px;
+        }
+        
+        .comic-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .comic-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comic-image {
+            width: 100%;
+            height: 200px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        
+        .comic-content {
+            padding: 20px;
+        }
+        
+        .comic-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+        
+        .comic-date {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .comic-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: #f3f4f6;
+            color: #6b7280;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .cta-section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .cta-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+        
+        .cta-description {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+        
+        .btn {
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #374151;
+        }
+        
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 40px 0;
+            margin-top: 80px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-text {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .footer-link {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .nav {
+                gap: 16px;
+            }
+            
+            .comic-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+    </style>
 </head>
-<body class="theme-paperboy">
-  <header class="site-header">
-    <div class="brand">
-      <h1><a href="/Porteria/" style="text-decoration:none; color:inherit;">Paperboy</a></h1>
-      <p class="subtitle">La Portería</p>
-    </div>
-    <nav class="main-nav">
-      <a href="/Porteria/">Inicio</a>
-      <a href="/Porteria/tiras/">Tiras</a>
-      <a href="/Porteria/about/">Acerca de</a>
-      <a href="/Porteria/feed.xml">RSS</a>
-    </nav>
-  </header>
+<body>
+    <div id="root"></div>
 
-  <main class="container">
-    <section class="tags-list">
-      <a href="#" class="tag" onclick="filterByTag('diario');">#diario</a>
-      <a href="#" class="tag" onclick="filterByTag('humor');">#humor</a>
-      <a href="#" class="tag" onclick="filterByTag('vida');">#vida</a>
-    </section>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-    <section class="tira-dia">
-      <article class="tira-card">
-        <header class="tira-meta">
-          <h2><a href="/Porteria/tiras/2025-12-03-tira-muestra-3/" style="text-decoration:none;color:inherit;">Tira del día</a></h2>
-          <time datetime="2025-12-03">2025-12-03</time>
-        </header>
-        <div class="tira-image-vertical">
-          <img src="/Porteria/assets/tiras/tira-muestra-3.svg" alt="Tira del día" loading="eager">
-        </div>
-        <div class="tira-tags">
-          <a href="#" class="tag" onclick="filterByTag('vida');">#vida</a>
-          <a href="#" class="tag" onclick="filterByTag('diario');">#diario</a>
-        </div>
-        <div class="tira-nav">
-          <a href="/Porteria/tiras/2025-12-02-tira-muestra-2/" class="btn">Anterior</a>
-        </div>
-      </article>
-    </section>
+        const ComicStrip = ({ title, date, tags, image }) => (
+            <div className="comic-card">
+                <div className="comic-image">
+                    {image ? <img src={image} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'Comic Strip Image'}
+                </div>
+                <div className="comic-content">
+                    <h3 className="comic-title">{title}</h3>
+                    <div className="comic-date">{date}</div>
+                    <div className="comic-tags">
+                        {tags.map((tag, index) => (
+                            <span key={index} className="tag">#{tag}</span>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
 
-    <section class="roller-section">
-      <h3>Archivo — Roller</h3>
-      <div id="roller" class="roller" tabindex="0" aria-label="Roller de tiras">
-        <div class="roller-item" data-date="2025-12-03">
-          <img src="/Porteria/assets/tiras/tira-muestra-3.svg" alt="Tira 3" loading="lazy">
-          <div class="meta">2025-12-03</div>
-        </div>
-        <div class="roller-item" data-date="2025-12-02">
-          <img src="/Porteria/assets/tiras/tira-muestra-2.svg" alt="Tira 2" loading="lazy">
-          <div class="meta">2025-12-02</div>
-        </div>
-        <div class="roller-item" data-date="2025-12-01">
-          <img src="/Porteria/assets/tiras/tira-muestra-1.svg" alt="Tira 1" loading="lazy">
-          <div class="meta">2025-12-01</div>
-        </div>
-      </div>
-    </section>
-  </main>
+        const Header = () => (
+            <header className="header">
+                <div className="container">
+                    <div className="header-content">
+                        <a href="#" className="logo">Paperboy</a>
+                        <nav className="nav">
+                            <a href="#" className="nav-link">Inicio</a>
+                            <a href="#" className="nav-link">Tiras</a>
+                            <a href="#" className="nav-link">Archivo</a>
+                            <a href="#" className="nav-link">Acerca de</a>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+        );
 
-  <footer class="site-footer">
-    <div class="footer-left">© 2025 Paperboy — La Portería</div>
-    <div class="footer-right" id="tags">
-      <span>Periódico</span>
-      <span>Tiras diarias</span>
-      <span>Minimal</span>
-      <span>Paperboy</span>
-    </div>
-  </footer>
+        const Hero = () => (
+            <section className="hero">
+                <h1>La Portería</h1>
+                <p>
+                    Blog de tiras cómicas diarias con roller horizontal concatenado y tira del día vertical. 
+                    Proyecto ligero construido con amor y dedicación.
+                </p>
+            </section>
+        );
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Modal zoom functionality
-      const tiraImage = document.querySelector('.tira-image-vertical');
-      if (tiraImage) {
-        tiraImage.addEventListener('click', () => {
-          const imgSrc = tiraImage.querySelector('img').src;
-          const modal = document.createElement('div');
-          modal.className = 'zoom-modal';
-          modal.innerHTML = `<img src="${imgSrc}" alt="Zoomed image">`;
-          modal.addEventListener('click', () => {
-            modal.classList.remove('visible');
-            setTimeout(() => modal.remove(), 300);
-          });
-          document.body.appendChild(modal);
-          setTimeout(() => modal.classList.add('visible'), 10);
-        });
-      }
+        const ComicGrid = ({ comics }) => (
+            <section className="comic-grid">
+                {comics.map((comic, index) => (
+                    <ComicStrip key={index} {...comic} />
+                ))}
+            </section>
+        );
 
-      // Roller click functionality
-      const rollerItems = document.querySelectorAll('.roller-item');
-      rollerItems.forEach(item => {
-        item.addEventListener('click', () => {
-          const date = item.dataset.date;
-          console.log(`Navigate to tira: ${date}`);
-        });
-      });
+        const CTASection = () => (
+            <section className="cta-section">
+                <h2 className="cta-title">¿Te gustan nuestras tiras?</h2>
+                <p className="cta-description">
+                    Suscríbete para recibir las últimas tiras cómicas directamente en tu email.
+                </p>
+                <a href="#" className="btn">Suscribirme</a>
+            </section>
+        );
 
-      // Roller drag functionality
-      const roller = document.getElementById('roller');
-      if (roller) {
-        let isDown = false, startX, scrollLeft;
-        
-        roller.addEventListener('pointerdown', (e) => {
-          isDown = true;
-          roller.setPointerCapture(e.pointerId);
-          startX = e.clientX;
-          scrollLeft = roller.scrollLeft;
-          roller.classList.add('dragging');
-        });
-        
-        roller.addEventListener('pointermove', (e) => {
-          if (!isDown) return;
-          const dx = e.clientX - startX;
-          roller.scrollLeft = scrollLeft - dx;
-        });
-        
-        ['pointerup','pointercancel','pointerleave'].forEach(ev => {
-          roller.addEventListener(ev, (e) => {
-            isDown = false;
-            roller.classList.remove('dragging');
-          });
-        });
-      }
-    });
+        const Footer = () => (
+            <footer className="footer">
+                <div className="container">
+                    <div className="footer-content">
+                        <div className="footer-text">
+                            © 2025 Paperboy — La Portería. Todos los derechos reservados.
+                        </div>
+                        <div className="footer-links">
+                            <a href="#" className="footer-link">RSS</a>
+                            <a href="#" className="footer-link">Contacto</a>
+                            <a href="#" className="footer-link">Términos</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        );
 
-    function filterByTag(tag) {
-      console.log(`Filter by tag: ${tag}`);
-      // Add tag filtering logic here
-    }
-  </script>
+        const App = () => {
+            const [comics, setComics] = useState([]);
+
+            useEffect(() => {
+                // Sample comic data - replace with actual data from your backend
+                const sampleComics = [
+                    {
+                        title: "Tira de muestra 1",
+                        date: "2025-12-01",
+                        tags: ["humor", "diario"],
+                        image: "/Porteria/assets/tiras/tira-muestra-1.svg"
+                    },
+                    {
+                        title: "Tira de muestra 2", 
+                        date: "2025-12-02",
+                        tags: ["vida", "reflexión"],
+                        image: "/Porteria/assets/tiras/tira-muestra-2.svg"
+                    },
+                    {
+                        title: "Tira de muestra 3",
+                        date: "2025-12-03", 
+                        tags: ["humor", "tecnología"],
+                        image: "/Porteria/assets/tiras/tira-muestra-3.svg"
+                    }
+                ];
+                setComics(sampleComics);
+            }, []);
+
+            return (
+                <div>
+                    <Header />
+                    <main className="main">
+                        <div className="container">
+                            <Hero />
+                            <ComicGrid comics={comics} />
+                            <CTASection />
+                        </div>
+                    </main>
+                    <Footer />
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
 </body>
 </html>

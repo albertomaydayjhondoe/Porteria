@@ -1,0 +1,19 @@
+{
+  "name": "paperboy-porteria",
+  "version": "1.0.0",
+  "description": "Blog de tiras cómicas diarias - Paperboy La Portería",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.0.0"
+  }
+}
