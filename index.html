@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paperboy — La Portería</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -276,17 +277,62 @@
 
     <script type="text/babel">
         const { useState, useEffect } = React;
+        
+        // Supabase configuration
+        const SUPABASE_URL = 'https://sxjwoyxwgmmsaqczvjpd.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4andveXh3Z21tc2FxY3p2anBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1ODQ4OTIsImV4cCI6MjA4MDE2MDg5Mn0.C7E_sRLVn9Uzfv3w-AzwuUQC0xB4Mfuq0aFfxrXK3s0';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-        const ComicStrip = ({ title, date, tags, image }) => (
+        // Utility functions for Supabase operations
+        const addComic = async (comic) => {
+            const { data, error } = await supabase
+                .from('comics')
+                .insert([comic]);
+            return { data, error };
+        };
+
+        const updateComic = async (id, updates) => {
+            const { data, error } = await supabase
+                .from('comics')
+                .update(updates)
+                .eq('id', id);
+            return { data, error };
+        };
+
+        const deleteComic = async (id) => {
+            const { data, error } = await supabase
+                .from('comics')
+                .delete()
+                .eq('id', id);
+            return { data, error };
+        };
+
+        const ComicStrip = ({ title, date, tags, image, description }) => (
             <div className="comic-card">
                 <div className="comic-image">
                     {image ? <img src={image} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'Comic Strip Image'}
                 </div>
                 <div className="comic-content">
                     <h3 className="comic-title">{title}</h3>
-                    <div className="comic-date">{date}</div>
+                    <div className="comic-date">{new Date(date).toLocaleDateString('es-ES', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })}</div>
+                    {description && (
+                        <p style={{ 
+                            color: '#6b7280', 
+                            fontSize: '14px', 
+                            margin: '8px 0', 
+                            lineHeight: '1.4' 
+                        }}>
+                            {description}
+                        </p>
+                    )}
                     <div className="comic-tags">
-                        {tags.map((tag, index) => (
+                        {tags && tags.map((tag, index) => (
                             <span key={index} className="tag">#{tag}</span>
                         ))}
                     </div>
@@ -359,37 +405,95 @@
 
         const App = () => {
             const [comics, setComics] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
 
             useEffect(() => {
-                // Tiras cómicas actualizadas - 4 de diciembre 2025
-                const todaysComics = [
-                    {
-                        title: "Miércoles de Reflexión",
-                        date: "2025-12-04",
-                        tags: ["hoy", "reflexión", "miércoles"],
-                        image: "/Porteria/assets/tiras/2025-12-04-miercoles-reflexion.svg"
-                    },
-                    {
-                        title: "El Merge Perfecto",
-                        date: "2025-12-03",
-                        tags: ["tech", "programming", "humor"],
-                        image: "/Porteria/assets/tiras/2025-12-03-merge-perfecto.svg"
-                    },
-                    {
-                        title: "Luces de Diciembre",
-                        date: "2025-12-02",
-                        tags: ["navidad", "vida", "diciembre"],
-                        image: "/Porteria/assets/tiras/2025-12-02-luces-diciembre.svg"
-                    },
-                    {
-                        title: "Primer Día del Mes",
-                        date: "2025-12-01",
-                        tags: ["nuevo-mes", "esperanza", "diciembre"],
-                        image: "/Porteria/assets/tiras/2025-12-01-primer-dia.svg"
+                const loadComics = async () => {
+                    try {
+                        // Try to load from Supabase first
+                        const { data: supabaseComics, error: supabaseError } = await supabase
+                            .from('comics')
+                            .select('*')
+                            .order('date', { ascending: false });
+
+                        if (supabaseError) {
+                            console.log('Supabase error, using fallback data:', supabaseError);
+                            // Fallback to static data
+                            const fallbackComics = [
+                                {
+                                    title: "Miércoles de Reflexión",
+                                    date: "2025-12-04",
+                                    tags: ["hoy", "reflexión", "miércoles"],
+                                    image: "/Porteria/assets/tiras/2025-12-04-miercoles-reflexion.svg"
+                                },
+                                {
+                                    title: "El Merge Perfecto",
+                                    date: "2025-12-03",
+                                    tags: ["tech", "programming", "humor"],
+                                    image: "/Porteria/assets/tiras/2025-12-03-merge-perfecto.svg"
+                                },
+                                {
+                                    title: "Luces de Diciembre",
+                                    date: "2025-12-02",
+                                    tags: ["navidad", "vida", "diciembre"],
+                                    image: "/Porteria/assets/tiras/2025-12-02-luces-diciembre.svg"
+                                },
+                                {
+                                    title: "Primer Día del Mes",
+                                    date: "2025-12-01",
+                                    tags: ["nuevo-mes", "esperanza", "diciembre"],
+                                    image: "/Porteria/assets/tiras/2025-12-01-primer-dia.svg"
+                                }
+                            ];
+                            setComics(fallbackComics);
+                        } else {
+                            // Use Supabase data if available
+                            setComics(supabaseComics || []);
+                        }
+                    } catch (err) {
+                        console.error('Error loading comics:', err);
+                        setError('Error loading comics');
+                        // Use fallback data on error
+                        const fallbackComics = [
+                            {
+                                title: "Miércoles de Reflexión",
+                                date: "2025-12-04",
+                                tags: ["hoy", "reflexión", "miércoles"],
+                                image: "/Porteria/assets/tiras/2025-12-04-miercoles-reflexion.svg"
+                            },
+                            {
+                                title: "El Merge Perfecto", 
+                                date: "2025-12-03",
+                                tags: ["tech", "programming", "humor"],
+                                image: "/Porteria/assets/tiras/2025-12-03-merge-perfecto.svg"
+                            }
+                        ];
+                        setComics(fallbackComics);
+                    } finally {
+                        setLoading(false);
                     }
-                ];
-                setComics(todaysComics);
+                };
+
+                loadComics();
             }, []);
+
+            if (loading) {
+                return (
+                    <div>
+                        <Header />
+                        <main className="main">
+                            <div className="container">
+                                <Hero />
+                                <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                                    <div style={{ fontSize: '18px', color: '#6b7280' }}>📚 Cargando tiras cómicas...</div>
+                                </div>
+                            </div>
+                        </main>
+                        <Footer />
+                    </div>
+                );
+            }
 
             return (
                 <div>
@@ -397,6 +501,18 @@
                     <main className="main">
                         <div className="container">
                             <Hero />
+                            {error && (
+                                <div style={{ 
+                                    background: '#fef3c7', 
+                                    color: '#92400e', 
+                                    padding: '12px 20px', 
+                                    borderRadius: '8px', 
+                                    marginBottom: '24px', 
+                                    textAlign: 'center' 
+                                }}>
+                                    ⚠️ {error} - Mostrando contenido de respaldo
+                                </div>
+                            )}
                             <ComicGrid comics={comics} />
                             <CTASection />
                         </div>
