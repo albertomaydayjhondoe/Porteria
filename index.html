@@ -106,11 +106,31 @@
             overflow: hidden;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
         }
         
         .comic-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comic-card:first-child {
+            border: 2px solid #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, white 100%);
+        }
+        
+        .comic-card:first-child::before {
+            content: "🆕 HOY";
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 10;
         }
         
         .comic-image {
@@ -294,8 +314,9 @@
             <section className="hero">
                 <h1>La Portería</h1>
                 <p>
+                    📅 <strong>Hoy, 4 de Diciembre 2025</strong><br/>
                     Blog de tiras cómicas diarias con roller horizontal concatenado y tira del día vertical. 
-                    Proyecto ligero construido con amor y dedicación.
+                    Proyecto ligero construido con amor y dedicación para alegrar tu día.
                 </p>
             </section>
         );
@@ -310,9 +331,10 @@
 
         const CTASection = () => (
             <section className="cta-section">
-                <h2 className="cta-title">¿Te gustan nuestras tiras?</h2>
+                <h2 className="cta-title">🎨 ¡Actualizado hoy!</h2>
                 <p className="cta-description">
-                    Suscríbete para recibir las últimas tiras cómicas directamente en tu email.
+                    Nueva tira "Miércoles de Reflexión" disponible. Suscríbete para recibir las últimas 
+                    tiras cómicas directamente en tu email cada día.
                 </p>
                 <a href="#" className="btn">Suscribirme</a>
             </section>
@@ -339,28 +361,34 @@
             const [comics, setComics] = useState([]);
 
             useEffect(() => {
-                // Sample comic data - replace with actual data from your backend
-                const sampleComics = [
+                // Tiras cómicas actualizadas - 4 de diciembre 2025
+                const todaysComics = [
                     {
-                        title: "Tira de muestra 1",
-                        date: "2025-12-01",
-                        tags: ["humor", "diario"],
-                        image: "/Porteria/assets/tiras/tira-muestra-1.svg"
+                        title: "Miércoles de Reflexión",
+                        date: "2025-12-04",
+                        tags: ["hoy", "reflexión", "miércoles"],
+                        image: "/Porteria/assets/tiras/2025-12-04-miercoles-reflexion.svg"
                     },
                     {
-                        title: "Tira de muestra 2", 
+                        title: "El Merge Perfecto",
+                        date: "2025-12-03",
+                        tags: ["tech", "programming", "humor"],
+                        image: "/Porteria/assets/tiras/2025-12-03-merge-perfecto.svg"
+                    },
+                    {
+                        title: "Luces de Diciembre",
                         date: "2025-12-02",
-                        tags: ["vida", "reflexión"],
-                        image: "/Porteria/assets/tiras/tira-muestra-2.svg"
+                        tags: ["navidad", "vida", "diciembre"],
+                        image: "/Porteria/assets/tiras/2025-12-02-luces-diciembre.svg"
                     },
                     {
-                        title: "Tira de muestra 3",
-                        date: "2025-12-03", 
-                        tags: ["humor", "tecnología"],
-                        image: "/Porteria/assets/tiras/tira-muestra-3.svg"
+                        title: "Primer Día del Mes",
+                        date: "2025-12-01",
+                        tags: ["nuevo-mes", "esperanza", "diciembre"],
+                        image: "/Porteria/assets/tiras/2025-12-01-primer-dia.svg"
                     }
                 ];
-                setComics(sampleComics);
+                setComics(todaysComics);
             }, []);
 
             return (
