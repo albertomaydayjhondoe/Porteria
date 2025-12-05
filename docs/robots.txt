@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://albertomaydayjhondoe.github.io/Porteria/sitemap.xml
