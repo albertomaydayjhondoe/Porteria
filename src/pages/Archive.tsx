@@ -29,26 +29,26 @@ const Archive = () => {
     try {
       // Datos locales como respaldo
       const localStrips = [
-        { id: "local-020", title: "Primera Tira", video_url: "/Porteria/strips/video-020.mp4", image_url: "/Porteria/strips/thumb-020.jpg", media_type: 'video' as const, publish_date: "2025-12-09" },
-        { id: "local-019", title: "El Misterio del 3º B", video_url: "/Porteria/strips/video-019.mp4", image_url: "/Porteria/strips/thumb-019.jpg", media_type: 'video' as const, publish_date: "2025-12-08" },
-        { id: "local-018", title: "Inspección Sanitaria", video_url: "/Porteria/strips/video-018.mp4", image_url: "/Porteria/strips/thumb-018.jpg", media_type: 'video' as const, publish_date: "2025-12-07" },
-        { id: "local-017", title: "La Llave Perdida", video_url: "/Porteria/strips/video-017.mp4", image_url: "/Porteria/strips/thumb-017.jpg", media_type: 'video' as const, publish_date: "2025-12-06" },
-        { id: "local-016", title: "Visita del Técnico", video_url: "/Porteria/strips/video-016.mp4", image_url: "/Porteria/strips/thumb-016.jpg", media_type: 'video' as const, publish_date: "2025-12-05" },
-        { id: "local-015", title: "Día de Mudanza", video_url: "/Porteria/strips/video-015.mp4", image_url: "/Porteria/strips/thumb-015.jpg", media_type: 'video' as const, publish_date: "2025-12-04" },
-        { id: "local-014", title: "Buzón Atascado", video_url: "/Porteria/strips/video-014.mp4", image_url: "/Porteria/strips/thumb-014.jpg", media_type: 'video' as const, publish_date: "2025-12-03" },
-        { id: "local-013", title: "Navidad Anticipada", video_url: "/Porteria/strips/video-013.mp4", image_url: "/Porteria/strips/thumb-013.jpg", media_type: 'video' as const, publish_date: "2025-12-02" },
-        { id: "local-012", title: "La Vecina Chismosa", video_url: "/Porteria/strips/video-012.mp4", image_url: "/Porteria/strips/thumb-012.jpg", media_type: 'video' as const, publish_date: "2025-12-01" },
-        { id: "local-011", title: "Apagón General", video_url: "/Porteria/strips/video-011.mp4", image_url: "/Porteria/strips/thumb-011.jpg", media_type: 'video' as const, publish_date: "2025-11-30" },
-        { id: "local-010", title: "El Cartero Sustituto", video_url: "/Porteria/strips/video-010.mp4", image_url: "/Porteria/strips/thumb-010.jpg", media_type: 'video' as const, publish_date: "2025-11-29" },
-        { id: "local-009", title: "Reforma en el Ático", video_url: "/Porteria/strips/video-009.mp4", image_url: "/Porteria/strips/thumb-009.jpg", media_type: 'video' as const, publish_date: "2025-11-28" },
-        { id: "local-008", title: "El Perro del 5º", video_url: "/Porteria/strips/video-008.mp4", image_url: "/Porteria/strips/thumb-008.jpg", media_type: 'video' as const, publish_date: "2025-11-27" },
-        { id: "local-007", title: "Fiesta Nocturna", video_url: "/Porteria/strips/video-007.mp4", image_url: "/Porteria/strips/thumb-007.jpg", media_type: 'video' as const, publish_date: "2025-11-26" },
-        { id: "local-006", title: "Horario de Basura", video_url: "/Porteria/strips/video-006.mp4", image_url: "/Porteria/strips/thumb-006.jpg", media_type: 'video' as const, publish_date: "2025-11-25" },
-        { id: "local-005", title: "El Ascensor Averiado", video_url: "/Porteria/strips/video-005.mp4", image_url: "/Porteria/strips/thumb-005.jpg", media_type: 'video' as const, publish_date: "2025-11-24" },
-        { id: "local-004", title: "La Conexión WiFi", video_url: "/Porteria/strips/video-004.mp4", image_url: "/Porteria/strips/thumb-004.jpg", media_type: 'video' as const, publish_date: "2025-11-23" },
-        { id: "local-003", title: "Reunión de Consorcio", video_url: "/Porteria/strips/video-003.mp4", image_url: "/Porteria/strips/thumb-003.jpg", media_type: 'video' as const, publish_date: "2025-11-22" },
-        { id: "local-002", title: "Paquetería Confusa", video_url: "/Porteria/strips/video-002.mp4", image_url: "/Porteria/strips/thumb-002.jpg", media_type: 'video' as const, publish_date: "2025-11-21" },
-        { id: "local-001", title: "El Nuevo Inquilino", video_url: "/Porteria/strips/video-001.mp4", image_url: "/Porteria/strips/thumb-001.jpg", media_type: 'video' as const, publish_date: "2025-11-20" }
+        { id: "local-020", title: "Primera Tira", image_url: "/Porteria/strips/strip-020.png", media_type: 'image' as const, publish_date: "2025-12-09" },
+        { id: "local-019", title: "El Misterio del 3º B", image_url: "/Porteria/strips/strip-019.png", media_type: 'image' as const, publish_date: "2025-12-08" },
+        { id: "local-018", title: "Inspección Sanitaria", image_url: "/Porteria/strips/strip-018.png", media_type: 'image' as const, publish_date: "2025-12-07" },
+        { id: "local-017", title: "La Llave Perdida", image_url: "/Porteria/strips/strip-017.png", media_type: 'image' as const, publish_date: "2025-12-06" },
+        { id: "local-016", title: "Visita del Técnico", image_url: "/Porteria/strips/strip-016.png", media_type: 'image' as const, publish_date: "2025-12-05" },
+        { id: "local-015", title: "Día de Mudanza", image_url: "/Porteria/strips/strip-015.png", media_type: 'image' as const, publish_date: "2025-12-04" },
+        { id: "local-014", title: "Buzón Atascado", image_url: "/Porteria/strips/strip-014.png", media_type: 'image' as const, publish_date: "2025-12-03" },
+        { id: "local-013", title: "Navidad Anticipada", image_url: "/Porteria/strips/strip-013.png", media_type: 'image' as const, publish_date: "2025-12-02" },
+        { id: "local-012", title: "La Vecina Chismosa", image_url: "/Porteria/strips/strip-012.png", media_type: 'image' as const, publish_date: "2025-12-01" },
+        { id: "local-011", title: "Apagón General", image_url: "/Porteria/strips/strip-011.png", media_type: 'image' as const, publish_date: "2025-11-30" },
+        { id: "local-010", title: "El Cartero Sustituto", image_url: "/Porteria/strips/strip-010.png", media_type: 'image' as const, publish_date: "2025-11-29" },
+        { id: "local-009", title: "Reforma en el Ático", image_url: "/Porteria/strips/strip-009.png", media_type: 'image' as const, publish_date: "2025-11-28" },
+        { id: "local-008", title: "El Perro del 5º", image_url: "/Porteria/strips/strip-008.png", media_type: 'image' as const, publish_date: "2025-11-27" },
+        { id: "local-007", title: "Fiesta Nocturna", image_url: "/Porteria/strips/strip-007.png", media_type: 'image' as const, publish_date: "2025-11-26" },
+        { id: "local-006", title: "Horario de Basura", image_url: "/Porteria/strips/strip-006.png", media_type: 'image' as const, publish_date: "2025-11-25" },
+        { id: "local-005", title: "El Ascensor Averiado", image_url: "/Porteria/strips/strip-005.png", media_type: 'image' as const, publish_date: "2025-11-24" },
+        { id: "local-004", title: "La Conexión WiFi", image_url: "/Porteria/strips/strip-004.png", media_type: 'image' as const, publish_date: "2025-11-23" },
+        { id: "local-003", title: "Reunión de Consorcio", image_url: "/Porteria/strips/strip-003.png", media_type: 'image' as const, publish_date: "2025-11-22" },
+        { id: "local-002", title: "Paquetería Confusa", image_url: "/Porteria/strips/strip-002.png", media_type: 'image' as const, publish_date: "2025-11-21" },
+        { id: "local-001", title: "El Nuevo Inquilino", image_url: "/Porteria/strips/strip-001.png", media_type: 'image' as const, publish_date: "2025-11-20" }
       ];
 
       // Si no hay cliente de Supabase (GitHub Pages), usar solo datos locales
