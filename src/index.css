@@ -18,18 +18,15 @@ All colors MUST be HSL.
     --popover: 222 20% 8%;
     --popover-foreground: 40 100% 98%;
     
-    /* Primary: Warm amber accent for dark mode */
     --primary: 38 92% 65%;
     --primary-foreground: 222 20% 8%;
     
-    /* Secondary: Deep blue-gray */
     --secondary: 220 15% 18%;
     --secondary-foreground: 40 100% 98%;
     
     --muted: 220 15% 18%;
     --muted-foreground: 40 20% 70%;
     
-    /* Accent: Subtle orange glow */
     --accent: 30 80% 55%;
     --accent-foreground: 222 20% 8%;
     
@@ -40,9 +37,10 @@ All colors MUST be HSL.
     --input: 220 15% 18%;
     --ring: 38 92% 65%;
     
-    /* Custom dark mode shadows with warm glow */
     --shadow-newspaper: 0 2px 12px hsla(38, 92%, 50%, 0.15);
     --shadow-editorial: 0 4px 24px hsla(38, 92%, 50%, 0.25);
+    
+    color-scheme: dark;
   }
 }
 
@@ -58,6 +56,17 @@ All colors MUST be HSL.
   /* Editorial typography */
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
+  }
+  
+  /* Wider container for dark theme */
+  .container {
+    max-width: 1400px;
+  }
+  
+  @media (min-width: 1536px) {
+    .container {
+      max-width: 1600px;
+    }
   }
 }
 
