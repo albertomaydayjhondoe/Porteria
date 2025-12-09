@@ -9,8 +9,8 @@
 
 ### Credenciales de Usuario Administrador
 
-**Email**: `admin@porteria.com`  
-**Contraseña**: `Admin123!`
+**Email**: `sampayo@gmail.com`  
+**Contraseña**: `Bac2317?`
 
 ### Pasos para Crear el Usuario Administrador
 
@@ -19,13 +19,13 @@
    - Authentication → Users → Add User
 
 2. **Crear el usuario**:
-   - Email: `admin@porteria.com`
-   - Password: `Admin123!`
+   - Email: `sampayo@gmail.com`
+   - Password: `Bac2317?`
    - Confirmar email: ✓ (marcar como verificado)
 
 3. **Asignar rol de admin** (ejecutar en SQL Editor):
    ```sql
-   SELECT public.make_user_admin('admin@porteria.com');
+   SELECT public.make_user_admin('sampayo@gmail.com');
    ```
 
 ### Acceso a la Aplicación
@@ -44,7 +44,7 @@
 Si necesitas crear más usuarios administradores:
 
 ```sql
-SELECT public.make_user_admin('nuevo-admin@porteria.com');
+SELECT public.make_user_admin('nuevo-admin@example.com');
 ```
 
 Esta función está definida en: `supabase/migrations/20251209221536_create_admin_user.sql`
