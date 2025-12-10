@@ -1,18 +1,396 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Paperboy - La Portería | Video Cómicas Diarias</title>
-    <meta name="description" content="Blog de video-cómicas diarias con reproductores de video integrados" />
-    <meta name="author" content="Paperboy" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paperboy — La Portería | Video Player</title>
+    <meta name="description" content="Blog de video-cómicas diarias con reproductores de video integrados">
+    
+    <!-- React CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/Porteria/assets/index-Bt2n-i22.js"></script>
-    <link rel="stylesheet" crossorigin href="/Porteria/assets/index-BiKUc7vC.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: #fff;
+            border-bottom: 2px solid #000;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #000;
+            text-decoration: none;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: #000;
+            border-bottom-color: #000;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .hero h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .video-container {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.1);
+        }
+        
+        .video-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .video-header h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .video-header .date {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        video {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+            background: #000;
+            border-radius: 4px;
+        }
+        
+        .video-info {
+            margin-top: 1rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .video-card {
+            background: #fff;
+            border: 2px solid #000;
+            overflow: hidden;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .video-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+        }
+        
+        .video-thumbnail {
+            position: relative;
+            aspect-ratio: 16/9;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 3rem;
+        }
+        
+        .video-card-content {
+            padding: 1.5rem;
+        }
+        
+        .video-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #000;
+        }
+        
+        .video-card .date {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        .footer {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #666;
+        }
+        
+        .error {
+            color: #d32f2f;
+            text-align: center;
+            padding: 2rem;
+            background: #ffebee;
+            border: 2px solid #d32f2f;
+            margin: 2rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav {
+                gap: 1rem;
+            }
+            
+            .video-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">📰 Paperboy</a>
+                <nav class="nav">
+                    <a href="#home" class="nav-link active">Inicio</a>
+                    <a href="#archive" class="nav-link">Archivo</a>
+                    <a href="#admin" class="nav-link">Admin</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero">
+            <div class="container">
+                <h1>🎭 La Portería</h1>
+                <p>Video-cómicas diarias que retratan la vida cotidiana con humor y reflexión</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <div id="app-content">
+                <div class="loading">
+                    <div>🎬 Cargando reproductor de videos...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Paperboy La Portería. Video player con ❤️</p>
+        </div>
+    </footer>
+
+    <script>
+        // Video data
+        const videos = [
+            {
+                id: "001",
+                title: "Primera Tira",
+                videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+                date: "2025-12-10"
+            },
+            {
+                id: "002", 
+                title: "El Misterio del 3º B",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                date: "2025-12-09"
+            },
+            {
+                id: "003",
+                title: "Inspección Sanitaria", 
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                date: "2025-12-08"
+            },
+            {
+                id: "004",
+                title: "La Llave Perdida",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", 
+                date: "2025-12-07"
+            },
+            {
+                id: "005",
+                title: "Visita del Técnico",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+                date: "2025-12-06"
+            }
+        ];
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long', 
+                year: 'numeric'
+            });
+        }
+
+        function renderMainVideo() {
+            const latest = videos[0];
+            return `
+                <div class="video-container">
+                    <div class="video-header">
+                        <h2>${latest.title}</h2>
+                        <div class="date">${formatDate(latest.date)}</div>
+                    </div>
+                    <video 
+                        controls 
+                        controlsList="nodownload"
+                        preload="metadata"
+                        poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='100%25' height='100%25' fill='%23000'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='48'%3E🎬%3C/text%3E%3C/svg%3E"
+                    >
+                        <source src="${latest.videoUrl}" type="video/mp4">
+                        Tu navegador no soporta el elemento video.
+                    </video>
+                    <div class="video-info">
+                        Formato: MP4 • Usa los controles para reproducir y ajustar volumen
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderArchive() {
+            const archiveVideos = videos.slice(1);
+            return `
+                <div class="archive-grid">
+                    ${archiveVideos.map(video => `
+                        <div class="video-card">
+                            <div class="video-thumbnail">
+                                🎬
+                            </div>
+                            <div class="video-card-content">
+                                <h3>${video.title}</h3>
+                                <div class="date">${formatDate(video.date)}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function loadApp() {
+            const content = document.getElementById('app-content');
+            
+            try {
+                content.innerHTML = `
+                    ${renderMainVideo()}
+                    <h2 style="text-align: center; margin: 3rem 0 2rem; font-family: 'Libre Baskerville', serif; font-size: 2rem;">📚 Archivo de Videos</h2>
+                    ${renderArchive()}
+                `;
+                
+                console.log('✅ Video player loaded successfully');
+            } catch (error) {
+                console.error('❌ Error loading app:', error);
+                content.innerHTML = `
+                    <div class="error">
+                        <h3>Error al cargar el reproductor</h3>
+                        <p>Ha ocurrido un error al cargar el contenido. Por favor, recarga la página.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadApp);
+        
+        console.log('🎬 Paperboy La Portería - Video Player');
+        console.log('📊 Estado: Funcional');
+        console.log('🎯 Videos disponibles:', videos.length);
+    </script>
+</body>
 </html>
