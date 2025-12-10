@@ -268,39 +268,147 @@
     </footer>
 
     <script>
-        // Video data
-        const videos = [
-            {
-                id: "001",
-                title: "Primera Tira",
-                videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
-                date: "2025-12-10"
-            },
-            {
-                id: "002", 
-                title: "El Misterio del 3º B",
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                date: "2025-12-09"
-            },
-            {
-                id: "003",
-                title: "Inspección Sanitaria", 
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                date: "2025-12-08"
-            },
-            {
-                id: "004",
-                title: "La Llave Perdida",
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", 
-                date: "2025-12-07"
-            },
-            {
-                id: "005",
-                title: "Visita del Técnico",
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-                date: "2025-12-06"
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://sxjwoyxwgmmsaqczvjpd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4andveXh3Z21tc2FxY3p2anBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1ODQ4OTIsImV4cCI6MjA4MDE2MDg5Mn0.C7E_sRLVn9Uzfv3w-AzwuUQC0xB4Mfuq0aFfxrXK3s0';
+        
+        // Initialize Supabase client
+        let supabaseClient = null;
+        let currentUser = null;
+        let videos = [];
+        
+        // Initialize Supabase
+        function initSupabase() {
+            try {
+                if (typeof window.supabase !== 'undefined') {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                        auth: {
+                            storage: localStorage,
+                            persistSession: true,
+                            autoRefreshToken: true,
+                        }
+                    });
+                    console.log('✅ Supabase initialized successfully');
+                    loadVideosFromSupabase();
+                } else {
+                    console.warn('⚠️ Supabase not available, using local data');
+                    useLocalData();
+                }
+            } catch (error) {
+                console.error('❌ Supabase initialization error:', error);
+                useLocalData();
             }
-        ];
+        }
+        
+        // Load videos from Supabase
+        async function loadVideosFromSupabase() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('comic_strips')
+                    .select('*')
+                    .order('publish_date', { ascending: false });
+                
+                if (error) {
+                    console.warn('⚠️ Supabase query error:', error);
+                    useLocalData();
+                } else if (data && data.length > 0) {
+                    videos = data.map(strip => ({
+                        id: strip.id,
+                        title: strip.title,
+                        videoUrl: strip.video_url || strip.image_url,
+                        imageUrl: strip.image_url,
+                        date: strip.publish_date,
+                        mediaType: strip.media_type || 'video'
+                    }));
+                    console.log('✅ Loaded', videos.length, 'videos from Supabase');
+                    renderContent();
+                } else {
+                    console.log('📝 No data from Supabase, using local');
+                    useLocalData();
+                }
+            } catch (error) {
+                console.error('❌ Error loading from Supabase:', error);
+                useLocalData();
+            }
+        }
+        
+        // Fallback local data
+        function useLocalData() {
+            videos = [
+                {
+                    id: "001",
+                    title: "Primera Tira",
+                    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+                    date: "2025-12-10",
+                    mediaType: "video"
+                },
+                {
+                    id: "002", 
+                    title: "El Misterio del 3º B",
+                    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                    date: "2025-12-09",
+                    mediaType: "video"
+                },
+                {
+                    id: "003",
+                    title: "Inspección Sanitaria", 
+                    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                    date: "2025-12-08",
+                    mediaType: "video"
+                },
+                {
+                    id: "004",
+                    title: "La Llave Perdida",
+                    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", 
+                    date: "2025-12-07",
+                    mediaType: "video"
+                },
+                {
+                    id: "005",
+                    title: "Visita del Técnico",
+                    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+                    date: "2025-12-06",
+                    mediaType: "video"
+                }
+            ];
+            console.log('📝 Using local video data');
+            renderContent();
+        }
+        
+        // Authentication functions
+        async function loginAdmin(email, password) {
+            if (!supabaseClient) {
+                alert('Backend no disponible. Usando modo demo.');
+                return email === 'sampayo@gmail.com' && password === 'administrador';
+            }
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    console.error('❌ Login error:', error);
+                    return false;
+                }
+                
+                currentUser = data.user;
+                console.log('✅ Login successful:', currentUser.email);
+                return true;
+            } catch (error) {
+                console.error('❌ Login exception:', error);
+                return false;
+            }
+        }
+        
+        async function logoutAdmin() {
+            if (supabaseClient && currentUser) {
+                await supabaseClient.auth.signOut();
+            }
+            currentUser = null;
+            console.log('👋 Logged out');
+        }
 
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -354,25 +462,90 @@
             `;
         }
 
-        function loadApp() {
+        function renderContent() {
             const content = document.getElementById('app-content');
             
             try {
+                if (videos.length === 0) {
+                    content.innerHTML = `
+                        <div class="loading">
+                            <div>⏳ Cargando videos desde backend...</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
                 content.innerHTML = `
                     ${renderMainVideo()}
                     <h2 style="text-align: center; margin: 3rem 0 2rem; font-family: 'Libre Baskerville', serif; font-size: 2rem;">📚 Archivo de Videos</h2>
                     ${renderArchive()}
+                    ${renderAdminPanel()}
                 `;
                 
-                console.log('✅ Video player loaded successfully');
+                console.log('✅ Content rendered successfully');
             } catch (error) {
-                console.error('❌ Error loading app:', error);
+                console.error('❌ Error rendering content:', error);
                 content.innerHTML = `
                     <div class="error">
                         <h3>Error al cargar el reproductor</h3>
                         <p>Ha ocurrido un error al cargar el contenido. Por favor, recarga la página.</p>
+                        <button onclick="location.reload()">🔄 Recargar</button>
                     </div>
                 `;
+            }
+        }
+        
+        function renderAdminPanel() {
+            if (currentUser) {
+                return `
+                    <div style="background: #f0f8ff; border: 2px solid #0066cc; padding: 2rem; margin: 3rem 0; text-align: center;">
+                        <h3>👤 Panel de Administración</h3>
+                        <p>Bienvenido, ${currentUser.email}</p>
+                        <button onclick="logoutAdmin().then(() => renderContent())" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                            🚪 Cerrar Sesión
+                        </button>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div style="background: #f8f9fa; border: 2px solid #6c757d; padding: 2rem; margin: 3rem 0;">
+                    <h3 style="text-align: center; margin-bottom: 1rem;">🔐 Acceso de Administrador</h3>
+                    <div style="max-width: 400px; margin: 0 auto;">
+                        <div style="margin-bottom: 1rem;">
+                            <input type="email" id="admin-email" placeholder="Email" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" value="sampayo@gmail.com">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <input type="password" id="admin-password" placeholder="Contraseña" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                        </div>
+                        <button onclick="handleAdminLogin()" style="width: 100%; background: #007bff; color: white; border: none; padding: 0.75rem; border-radius: 4px; cursor: pointer;">
+                            🔑 Iniciar Sesión
+                        </button>
+                        <div id="login-message" style="margin-top: 1rem; text-align: center;"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function handleAdminLogin() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const messageDiv = document.getElementById('login-message');
+            
+            if (!email || !password) {
+                messageDiv.innerHTML = '<div style="color: #dc3545;">⚠️ Por favor completa ambos campos</div>';
+                return;
+            }
+            
+            messageDiv.innerHTML = '<div style="color: #6c757d;">🔄 Verificando credenciales...</div>';
+            
+            const success = await loginAdmin(email, password);
+            
+            if (success) {
+                messageDiv.innerHTML = '<div style="color: #28a745;">✅ Login exitoso</div>';
+                setTimeout(() => renderContent(), 1000);
+            } else {
+                messageDiv.innerHTML = '<div style="color: #dc3545;">❌ Credenciales incorrectas</div>';
             }
         }
 
@@ -382,15 +555,36 @@
                 e.preventDefault();
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
+                
+                const target = link.getAttribute('href');
+                if (target === '#admin') {
+                    // Scroll to admin panel
+                    setTimeout(() => {
+                        const adminPanel = document.querySelector('[style*="background: #f8f9fa"]') || 
+                                         document.querySelector('[style*="background: #f0f8ff"]');
+                        if (adminPanel) {
+                            adminPanel.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 100);
+                }
             });
         });
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', loadApp);
-        
-        console.log('🎬 Paperboy La Portería - Video Player');
-        console.log('📊 Estado: Funcional');
-        console.log('🎯 Videos disponibles:', videos.length);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎬 Paperboy La Portería - Video Player with Backend');
+            console.log('🔗 Supabase URL:', SUPABASE_URL);
+            
+            // Show loading initially
+            document.getElementById('app-content').innerHTML = `
+                <div class="loading">
+                    <div>🔄 Inicializando backend...</div>
+                </div>
+            `;
+            
+            // Initialize Supabase after a short delay to ensure DOM is ready
+            setTimeout(initSupabase, 500);
+        });
     </script>
 </body>
 </html>
