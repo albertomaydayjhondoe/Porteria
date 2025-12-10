@@ -26,7 +26,7 @@ async function createStorageBucket() {
     // Create the bucket
     const { data, error } = await supabase.storage.createBucket('comic-videos', {
       public: true,
-      fileSizeLimit: 104857600, // 100MB
+      fileSizeLimit: 157286400, // 150MB
       allowedMimeTypes: ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo']
     });
     

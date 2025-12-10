@@ -84,7 +84,7 @@ videos/
 - WebM
 - MOV
 - AVI
-- Máximo: 100MB por archivo
+- Máximo: 150MB por archivo
 
 ## Deploy
 El código está listo para producción. Solo falta:

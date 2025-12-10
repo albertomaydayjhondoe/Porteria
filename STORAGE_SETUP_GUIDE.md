@@ -6,7 +6,7 @@
 3. Configuración:
    - Name: `comic-videos`
    - Public bucket: ✅ SÍ
-   - File size limit: 104857600 (100MB)
+   - File size limit: 157286400 (150MB)
 4. Después de crear, ir a "Settings" → "Policies" 
 5. Asegurar que hay políticas para acceso público de lectura
 
@@ -20,7 +20,7 @@ VALUES (
   'comic-videos', 
   'comic-videos', 
   true, 
-  104857600,
+  157286400,
   ARRAY['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo']
 );
 ```
