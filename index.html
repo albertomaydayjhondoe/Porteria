@@ -409,6 +409,289 @@
             currentUser = null;
             console.log('👋 Logged out');
         }
+        
+        // Video upload functionality
+        async function uploadVideo() {
+            const title = document.getElementById('video-title').value.trim();
+            const date = document.getElementById('video-date').value;
+            const fileInput = document.getElementById('video-file');
+            const file = fileInput.files[0];
+            
+            // Validation
+            if (!title) {
+                alert('❌ Por favor ingresa un título');
+                return;
+            }
+            
+            if (!file) {
+                alert('❌ Por favor selecciona un archivo de video');
+                return;
+            }
+            
+            // File size validation (100MB)
+            if (file.size > 100 * 1024 * 1024) {
+                alert('❌ El archivo es muy grande. Máximo 100MB permitido.');
+                return;
+            }
+            
+            if (!supabaseClient) {
+                alert('❌ Backend no disponible');
+                return;
+            }
+            
+            // Show progress
+            const progressDiv = document.getElementById('upload-progress');
+            const statusSpan = document.getElementById('upload-status');
+            const percentSpan = document.getElementById('upload-percent');
+            const progressBar = document.getElementById('upload-bar');
+            
+            progressDiv.style.display = 'block';
+            statusSpan.textContent = 'Subiendo archivo...';
+            
+            try {
+                // Generate unique filename
+                const timestamp = new Date().getTime();
+                const fileExt = file.name.split('.').pop();
+                const fileName = `video_${timestamp}.${fileExt}`;
+                const filePath = `videos/${fileName}`;
+                
+                // Upload to Supabase Storage
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                    .from('comic-videos')
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+                
+                if (uploadError) {
+                    if (uploadError.message.includes('Bucket not found') || uploadError.message.includes('bucket')) {
+                        throw new Error('❌ Bucket "comic-videos" no existe. Ve al Dashboard de Supabase → Storage → Create bucket → Nombre: "comic-videos" (público)');
+                    }
+                    throw new Error('Error subiendo archivo: ' + uploadError.message);
+                }
+                
+                progressBar.style.width = '70%';
+                percentSpan.textContent = '70%';
+                statusSpan.textContent = 'Generando URL pública...';
+                
+                // Get public URL
+                const { data: urlData } = supabaseClient.storage
+                    .from('comic-videos')
+                    .getPublicUrl(filePath);
+                
+                if (!urlData?.publicUrl) {
+                    throw new Error('Error generando URL pública');
+                }
+                
+                progressBar.style.width = '90%';
+                percentSpan.textContent = '90%';
+                statusSpan.textContent = 'Guardando en base de datos...';
+                
+                // Save to database
+                const { data: dbData, error: dbError } = await supabaseClient
+                    .from('comic_strips')
+                    .insert([{
+                        title: title,
+                        publish_date: date,
+                        video_url: urlData.publicUrl,
+                        image_url: urlData.publicUrl, // Use same URL as fallback
+                        media_type: 'video'
+                    }])
+                    .select();
+                
+                if (dbError) {
+                    throw new Error('Error guardando en base de datos: ' + dbError.message);
+                }
+                
+                // Success
+                progressBar.style.width = '100%';
+                percentSpan.textContent = '100%';
+                statusSpan.textContent = '✅ Video subido exitosamente';
+                
+                // Clear form
+                document.getElementById('video-title').value = '';
+                document.getElementById('video-file').value = '';
+                
+                // Refresh video list and main content
+                setTimeout(() => {
+                    progressDiv.style.display = 'none';
+                    progressBar.style.width = '0%';
+                    refreshVideoList();
+                    loadVideosFromSupabase(); // Refresh main content
+                }, 2000);
+                
+                console.log('✅ Video uploaded successfully:', dbData);
+                
+            } catch (error) {
+                console.error('❌ Upload error:', error);
+                statusSpan.textContent = '❌ Error: ' + error.message;
+                progressBar.style.background = '#dc3545';
+                
+                setTimeout(() => {
+                    progressDiv.style.display = 'none';
+                    progressBar.style.background = '#007bff';
+                    progressBar.style.width = '0%';
+                }, 3000);
+            }
+        }
+        
+        // Render video list for management
+        function renderVideoList() {
+            if (!videos || videos.length === 0) {
+                return '<p style="text-align: center; color: #666; padding: 2rem;">No hay videos disponibles</p>';
+            }
+            
+            return `
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${videos.map(video => `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid #eee;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">${video.title}</div>
+                                <div style="font-size: 0.85rem; color: #666;">${formatDate(video.date)}</div>
+                                <div style="font-size: 0.8rem; color: #999;">${video.mediaType === 'video' ? '🎬' : '📷'} ${video.mediaType}</div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button onclick="previewVideo('${video.videoUrl}')" style="background: #007bff; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">
+                                    👁️ Ver
+                                </button>
+                                <button onclick="deleteVideo('${video.id}')" style="background: #dc3545; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 3px; cursor: pointer; font-size: 0.8rem;">
+                                    🗑️ Borrar
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // Refresh video list
+        async function refreshVideoList() {
+            if (!currentUser) return;
+            
+            const videoListDiv = document.getElementById('video-list');
+            if (videoListDiv) {
+                videoListDiv.innerHTML = '<div style="text-align: center; padding: 1rem;">🔄 Actualizando...</div>';
+                
+                // Reload videos from database
+                await loadVideosFromSupabase();
+                
+                // Update the list
+                videoListDiv.innerHTML = renderVideoList();
+            }
+        }
+        
+        // Preview video in modal
+        function previewVideo(videoUrl) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.8); z-index: 1000; display: flex; 
+                align-items: center; justify-content: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 800px; width: 90%; max-height: 90%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>🎬 Vista Previa</h3>
+                        <button onclick="this.closest('div').parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">
+                            ✕ Cerrar
+                        </button>
+                    </div>
+                    <video controls style="width: 100%; max-height: 400px;">
+                        <source src="${videoUrl}" type="video/mp4">
+                        Tu navegador no soporta video HTML5.
+                    </video>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close on click outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+        
+        // Test storage bucket
+        async function testStorageBucket() {
+            if (!supabaseClient || !currentUser) {
+                alert('❌ Necesitas estar logueado como admin');
+                return;
+            }
+            
+            const statusDiv = document.getElementById('bucket-status');
+            if (statusDiv) {
+                statusDiv.innerHTML = '🔄 Verificando bucket...';
+            }
+            
+            try {
+                // Try to list buckets
+                const { data: buckets, error: bucketsError } = await supabaseClient.storage.listBuckets();
+                
+                if (bucketsError) {
+                    const message = `❌ Error listando buckets: ${bucketsError.message}`;
+                    console.error(message);
+                    if (statusDiv) statusDiv.innerHTML = message;
+                    return;
+                }
+                
+                const bucketNames = buckets?.map(b => b.name) || [];
+                console.log('📁 Buckets disponibles:', bucketNames);
+                
+                const comicVideosBucket = buckets?.find(b => b.name === 'comic-videos');
+                
+                if (comicVideosBucket) {
+                    const message = `✅ Bucket "comic-videos" encontrado (público: ${comicVideosBucket.public})`;
+                    console.log(message);
+                    if (statusDiv) statusDiv.innerHTML = message;
+                } else {
+                    const message = `❌ Bucket "comic-videos" NO encontrado. Buckets existentes: [${bucketNames.join(', ')}]`;
+                    console.log(message);
+                    if (statusDiv) {
+                        statusDiv.innerHTML = message + '<br><br>📝 Para crear el bucket:<br>1. Ve al Dashboard de Supabase<br>2. Storage → Create bucket<br>3. Nombre: "comic-videos", Público: ✅';
+                    }
+                }
+            } catch (error) {
+                const message = `❌ Error verificando storage: ${error.message}`;
+                console.error(message);
+                if (statusDiv) statusDiv.innerHTML = message;
+            }
+        }
+        
+        // Delete video
+        async function deleteVideo(videoId) {
+            if (!confirm('¿Estás seguro de que quieres borrar este video?')) {
+                return;
+            }
+            
+            if (!supabaseClient) {
+                alert('❌ Backend no disponible');
+                return;
+            }
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('comic_strips')
+                    .delete()
+                    .eq('id', videoId);
+                
+                if (error) {
+                    throw new Error('Error borrando video: ' + error.message);
+                }
+                
+                console.log('✅ Video deleted successfully');
+                
+                // Refresh lists
+                await refreshVideoList();
+                await loadVideosFromSupabase();
+                
+            } catch (error) {
+                console.error('❌ Delete error:', error);
+                alert('❌ Error borrando video: ' + error.message);
+            }
+        }
 
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -498,12 +781,76 @@
         function renderAdminPanel() {
             if (currentUser) {
                 return `
-                    <div style="background: #f0f8ff; border: 2px solid #0066cc; padding: 2rem; margin: 3rem 0; text-align: center;">
-                        <h3>👤 Panel de Administración</h3>
-                        <p>Bienvenido, ${currentUser.email}</p>
-                        <button onclick="logoutAdmin().then(() => renderContent())" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
-                            🚪 Cerrar Sesión
-                        </button>
+                    <div style="background: #f0f8ff; border: 2px solid #0066cc; padding: 2rem; margin: 3rem 0;">
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <h3>👤 Panel de Administración</h3>
+                            <p>Bienvenido, ${currentUser.email}</p>
+                            <button onclick="logoutAdmin().then(() => renderContent())" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                                🚪 Cerrar Sesión
+                            </button>
+                        </div>
+                        
+                        <!-- Video Upload Section -->
+                        <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+                            <h4 style="margin-bottom: 1rem;">📹 Subir Nuevo Video</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Título:</label>
+                                    <input type="text" id="video-title" placeholder="Título del video" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Fecha:</label>
+                                    <input type="date" id="video-date" value="${new Date().toISOString().split('T')[0]}" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Archivo de Video:</label>
+                                <input type="file" id="video-file" accept="video/*" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                                <small style="color: #666;">Formatos soportados: MP4, WebM, AVI (máximo 100MB)</small>
+                            </div>
+                            <div style="text-align: center;">
+                                <button onclick="uploadVideo()" style="background: #28a745; color: white; border: none; padding: 0.75rem 2rem; border-radius: 4px; cursor: pointer; font-size: 1rem;">
+                                    📤 Subir Video
+                                </button>
+                            </div>
+                            <div id="upload-progress" style="margin-top: 1rem; display: none;">
+                                <div style="background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 1rem;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span id="upload-status">Preparando subida...</span>
+                                        <span id="upload-percent">0%</span>
+                                    </div>
+                                    <div style="background: #e9ecef; border-radius: 10px; height: 10px; margin-top: 0.5rem; overflow: hidden;">
+                                        <div id="upload-bar" style="background: #007bff; height: 100%; width: 0%; transition: width 0.3s;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Storage Diagnostics Section -->
+                        <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h4>🔧 Diagnóstico de Storage</h4>
+                                <button onclick="testStorageBucket()" style="background: #6f42c1; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                                    🔍 Verificar Bucket
+                                </button>
+                            </div>
+                            <div id="bucket-status" style="padding: 0.75rem; background: #f8f9fa; border-radius: 4px; font-family: monospace; font-size: 0.9rem;">
+                                Click "Verificar Bucket" para comprobar el estado del storage
+                            </div>
+                        </div>
+                        
+                        <!-- Video Management Section -->
+                        <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h4>🎬 Videos Subidos</h4>
+                                <button onclick="refreshVideoList()" style="background: #17a2b8; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                                    🔄 Actualizar
+                                </button>
+                            </div>
+                            <div id="video-list">
+                                🔄 Cargando videos...
+                            </div>
+                        </div>
                     </div>
                 `;
             }
@@ -564,6 +911,10 @@
                                          document.querySelector('[style*="background: #f0f8ff"]');
                         if (adminPanel) {
                             adminPanel.scrollIntoView({ behavior: 'smooth' });
+                        }
+                        // Initialize video list after successful login
+                        if (currentUser) {
+                            refreshVideoList();
                         }
                     }, 100);
                 }

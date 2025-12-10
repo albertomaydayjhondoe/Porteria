@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Storage Setup</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>🔧 Configuración de Storage</h1>
+    <div id="status">🔄 Iniciando...</div>
+    
+    <script>
+        const supabaseUrl = 'https://sxjwoyxwgmmsaqczvjpd.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4and4eXh3Z21tc2FxY3p2anBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMwNDc3MDAsImV4cCI6MjA0ODYyMzcwMH0.xQ-UrxLfdOW1r7qpE_hJPGHiT7zFp8jNEh6ajB29jpM';
+        
+        const { createClient } = supabase;
+        const client = createClient(supabaseUrl, supabaseAnonKey);
+        
+        async function setupStorage() {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                statusDiv.innerHTML = '🔐 Necesitas hacer login como admin para crear buckets...';
+                
+                // Login as admin first
+                const { data: user, error: loginError } = await client.auth.signInWithPassword({
+                    email: 'sampayo@gmail.com',
+                    password: 'administrador'
+                });
+                
+                if (loginError) {
+                    statusDiv.innerHTML = '❌ Error de login: ' + loginError.message;
+                    return;
+                }
+                
+                statusDiv.innerHTML = '✅ Login exitoso. Verificando buckets...';
+                
+                // Check existing buckets
+                const { data: buckets, error: listError } = await client.storage.listBuckets();
+                
+                if (listError) {
+                    statusDiv.innerHTML = '⚠️ No se pueden listar buckets (normal con anon key): ' + listError.message;
+                    statusDiv.innerHTML += '<br><br>📝 Para crear el bucket manualmente:<br>';
+                    statusDiv.innerHTML += '1. Ve al Dashboard de Supabase<br>';
+                    statusDiv.innerHTML += '2. Storage → Buckets → Create bucket<br>';
+                    statusDiv.innerHTML += '3. Nombre: "comic-videos"<br>';
+                    statusDiv.innerHTML += '4. Public: ✅ Activado<br>';
+                    statusDiv.innerHTML += '5. File size limit: 100MB<br>';
+                    return;
+                }
+                }
+                
+                statusDiv.innerHTML = '📁 Buckets existentes: ' + buckets.map(b => b.name).join(', ');
+                
+                const existingBucket = buckets.find(b => b.name === 'comic-videos');
+                if (existingBucket) {
+                    statusDiv.innerHTML += '<br>✅ Bucket "comic-videos" ya existe!';
+                    return;
+                }
+                
+                // Try to create bucket (might not work with anon key)
+                statusDiv.innerHTML += '<br>📤 Intentando crear bucket...';
+                
+                const { data, error } = await client.storage.createBucket('comic-videos', {
+                    public: true
+                });
+                
+                if (error) {
+                    statusDiv.innerHTML += '<br>❌ Error creando bucket: ' + error.message;
+                    statusDiv.innerHTML += '<br><br>📝 Crea manualmente en el Dashboard de Supabase';
+                } else {
+                    statusDiv.innerHTML += '<br>✅ Bucket creado exitosamente!';
+                }
+                
+            } catch (err) {
+                statusDiv.innerHTML = '❌ Error: ' + err.message;
+            }
+        }
+        
+        // Run setup
+        setupStorage();
+    </script>
+</body>
+</html>
