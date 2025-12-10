@@ -30,13 +30,13 @@ const Archive = () => {
 
   const loadStrips = async () => {
     try {
-      // Datos locales como respaldo
+      // Datos locales como respaldo - con videos
       const localStrips = [
-        { id: "local-020", title: "Primera Tira", image_url: "/Porteria/strips/strip-020.png", media_type: 'image' as const, publish_date: "2025-12-09" },
-        { id: "local-019", title: "El Misterio del 3º B", image_url: "/Porteria/strips/strip-019.png", media_type: 'image' as const, publish_date: "2025-12-08" },
-        { id: "local-018", title: "Inspección Sanitaria", image_url: "/Porteria/strips/strip-018.png", media_type: 'image' as const, publish_date: "2025-12-07" },
-        { id: "local-017", title: "La Llave Perdida", image_url: "/Porteria/strips/strip-017.png", media_type: 'image' as const, publish_date: "2025-12-06" },
-        { id: "local-016", title: "Visita del Técnico", image_url: "/Porteria/strips/strip-016.png", media_type: 'image' as const, publish_date: "2025-12-05" },
+        { id: "local-020", title: "Primera Tira", image_url: "/Porteria/strips/strip-020.png", video_url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4", media_type: 'video' as const, publish_date: "2025-12-09" },
+        { id: "local-019", title: "El Misterio del 3º B", image_url: "/Porteria/strips/strip-019.png", video_url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4", media_type: 'video' as const, publish_date: "2025-12-08" },
+        { id: "local-018", title: "Inspección Sanitaria", image_url: "/Porteria/strips/strip-018.png", video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", media_type: 'video' as const, publish_date: "2025-12-07" },
+        { id: "local-017", title: "La Llave Perdida", image_url: "/Porteria/strips/strip-017.png", video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", media_type: 'video' as const, publish_date: "2025-12-06" },
+        { id: "local-016", title: "Visita del Técnico", image_url: "/Porteria/strips/strip-016.png", video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", media_type: 'video' as const, publish_date: "2025-12-05" },
         { id: "local-015", title: "Día de Mudanza", image_url: "/Porteria/strips/strip-015.png", media_type: 'image' as const, publish_date: "2025-12-04" },
         { id: "local-014", title: "Buzón Atascado", image_url: "/Porteria/strips/strip-014.png", media_type: 'image' as const, publish_date: "2025-12-03" },
         { id: "local-013", title: "Navidad Anticipada", image_url: "/Porteria/strips/strip-013.png", media_type: 'image' as const, publish_date: "2025-12-02" },
@@ -82,37 +82,63 @@ const Archive = () => {
     }
   };
 
-  const downloadAsPDF = async (strip: ComicStrip, e: React.MouseEvent) => {
+  const downloadMedia = async (strip: ComicStrip, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      toast.info("Generando PDF...");
+      // Detectar el tipo de medio
+      const mediaType = strip.media_type || 'image';
       
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = strip.image_url;
-      });
+      if (mediaType === 'video' && strip.video_url) {
+        // Descarga directa para video
+        toast.info("Descargando video...");
+        const link = document.createElement('a');
+        link.href = strip.video_url;
+        link.download = `${strip.title || 'Porteria'}_${strip.publish_date}.mp4`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success("Descarga de video iniciada");
+      } else if (mediaType === 'audio' && strip.audio_url) {
+        // Descarga directa para audio
+        toast.info("Descargando audio...");
+        const link = document.createElement('a');
+        link.href = strip.audio_url;
+        link.download = `${strip.title || 'Porteria'}_${strip.publish_date}.mp3`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success("Descarga de audio iniciada");
+      } else {
+        // PDF para imágenes
+        toast.info("Generando PDF...");
+        
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = strip.image_url;
+        });
 
-      const pdf = new jsPDF({
-        orientation: img.width > img.height ? "landscape" : "portrait",
-        unit: "px",
-        format: [img.width, img.height],
-      });
+        const pdf = new jsPDF({
+          orientation: img.width > img.height ? "landscape" : "portrait",
+          unit: "px",
+          format: [img.width, img.height],
+        });
 
-      pdf.addImage(img, "PNG", 0, 0, img.width, img.height);
-      
-      const fileName = strip.title 
-        ? `${strip.title.replace(/[^a-z0-9]/gi, '_')}.pdf`
-        : `tira_${strip.publish_date}.pdf`;
-      
-      pdf.save(fileName);
-      toast.success("PDF descargado");
+        pdf.addImage(img, "PNG", 0, 0, img.width, img.height);
+        
+        const fileName = strip.title 
+          ? `${strip.title.replace(/[^a-z0-9]/gi, '_')}.pdf`
+          : `tira_${strip.publish_date}.pdf`;
+        
+        pdf.save(fileName);
+        toast.success("PDF descargado");
+      }
     } catch (error) {
-      console.error("Error generating PDF:", error);
-      toast.error("Error al generar el PDF");
+      console.error("Error downloading media:", error);
+      toast.error("Error al descargar");
     }
   };
 
@@ -220,7 +246,7 @@ const Archive = () => {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={(e) => downloadAsPDF(strip, e)}
+                          onClick={(e) => downloadMedia(strip, e)}
                           title="Descargar PDF para RRSS"
                           className="shrink-0 border-primary hover:bg-primary hover:text-primary-foreground"
                         >
