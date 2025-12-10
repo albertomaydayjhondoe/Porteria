@@ -91,78 +91,142 @@ const Admin = () => {
   };
 
   const uploadFileToGitHub = async (file: File, path: string): Promise<string> => {
-    const reader = new FileReader();
-    
     return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
       reader.onload = async () => {
         try {
           const content = reader.result as string;
           const base64Content = content.split(',')[1]; // Remove data:image/...;base64,
 
-          // Para archivos grandes (>100MB), usar Git LFS o método alternativo
-          // Por ahora, intentamos upload directo con mejor manejo de errores
+          console.log(`Uploading ${file.name} to ${path}...`);
+          
+          // Verificar si el archivo ya existe primero
+          let sha = undefined;
+          try {
+            const checkResponse = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+              headers: {
+                'Authorization': `Bearer ${githubToken}`,
+                'Accept': 'application/vnd.github.v3+json',
+              }
+            });
+            
+            if (checkResponse.ok) {
+              const existingFile = await checkResponse.json();
+              sha = existingFile.sha;
+              console.log(`File exists, will update with SHA: ${sha}`);
+            }
+          } catch (checkError) {
+            console.log('File does not exist, will create new');
+          }
+
+          // Subir o actualizar el archivo
+          const uploadBody: any = {
+            message: `Upload ${file.name} via admin panel (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
+            content: base64Content,
+            branch: GITHUB_BRANCH
+          };
+          
+          if (sha) {
+            uploadBody.sha = sha;
+          }
+
           const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
             method: 'PUT',
             headers: {
-              'Authorization': `token ${githubToken}`,
+              'Authorization': `Bearer ${githubToken}`,
+              'Accept': 'application/vnd.github.v3+json',
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              message: `Upload ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
-              content: base64Content,
-              branch: GITHUB_BRANCH
-            })
+            body: JSON.stringify(uploadBody)
           });
 
           if (!response.ok) {
-            const error = await response.json();
-            // Si falla por tamaño, sugerir compresión
-            if (error.message?.includes('too large') || error.message?.includes('size')) {
-              throw new Error(`Archivo muy grande para GitHub API. Comprime el video a menos de 100 MB. Tamaño actual: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+            const errorText = await response.text();
+            let error;
+            try {
+              error = JSON.parse(errorText);
+            } catch {
+              throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
-            throw new Error(error.message || 'Error uploading file to GitHub');
+            
+            console.error('Upload error:', error);
+            
+            // Errores específicos
+            if (response.status === 401) {
+              throw new Error('Token inválido o expirado. Genera un nuevo token en GitHub.');
+            }
+            if (response.status === 403) {
+              throw new Error('Sin permisos. Verifica que el token tenga scope "repo".');
+            }
+            if (error.message?.includes('too large') || error.message?.includes('size')) {
+              throw new Error(`Archivo muy grande para GitHub API (límite: 100 MB). Tamaño: ${(file.size / 1024 / 1024).toFixed(2)} MB. Comprime el video.`);
+            }
+            
+            throw new Error(error.message || `Error ${response.status} al subir archivo`);
           }
 
           const data = await response.json();
-          resolve(data.content.download_url);
+          console.log('Upload successful:', data.content.name);
+          
+          // Retornar la URL del archivo en el sitio deployado
+          const publicUrl = `/Porteria/strips/${file.name}`;
+          resolve(publicUrl);
+          
         } catch (error: any) {
+          console.error('Error in uploadFileToGitHub:', error);
           reject(error);
         }
       };
 
-      reader.onerror = () => reject(new Error('Error reading file'));
+      reader.onerror = () => {
+        console.error('FileReader error');
+        reject(new Error('Error leyendo el archivo. Intenta de nuevo.'));
+      };
+      
       reader.readAsDataURL(file);
     });
   };
 
   const updateStripsJSON = async (updatedStrips: ComicStrip[]) => {
     try {
+      console.log('Updating strips.json...');
+      toast.info('Actualizando base de datos...');
+      
       // Obtener el SHA actual del archivo
       const getResponse = await fetch(
         `https://api.github.com/repos/${GITHUB_REPO}/contents/public/data/strips.json`,
         {
           headers: {
-            'Authorization': `token ${githubToken}`,
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
           }
         }
       );
 
+      if (!getResponse.ok) {
+        throw new Error(`Error obteniendo strips.json: ${getResponse.status}`);
+      }
+
       const fileData = await getResponse.json();
       const sha = fileData.sha;
+      console.log(`Current strips.json SHA: ${sha}`);
 
       // Actualizar el archivo
-      const content = btoa(JSON.stringify({ strips: updatedStrips }, null, 2));
+      const jsonContent = JSON.stringify({ strips: updatedStrips }, null, 2);
+      const content = btoa(unescape(encodeURIComponent(jsonContent))); // UTF-8 safe
       
       const updateResponse = await fetch(
         `https://api.github.com/repos/${GITHUB_REPO}/contents/public/data/strips.json`,
         {
           method: 'PUT',
           headers: {
-            'Authorization': `token ${githubToken}`,
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            message: 'Update strips.json via admin panel',
+            message: `Update strips.json - Add "${updatedStrips[0]?.title || 'new strip'}"`,
             content: content,
             sha: sha,
             branch: GITHUB_BRANCH
@@ -171,12 +235,17 @@ const Admin = () => {
       );
 
       if (!updateResponse.ok) {
-        throw new Error('Error updating strips.json');
+        const errorText = await updateResponse.text();
+        console.error('Update error:', errorText);
+        throw new Error(`Error ${updateResponse.status} al actualizar strips.json`);
       }
 
+      console.log('strips.json updated successfully');
+      toast.success('Base de datos actualizada');
       return true;
     } catch (error: any) {
-      throw new Error(`Error updating JSON: ${error.message}`);
+      console.error('Error in updateStripsJSON:', error);
+      throw new Error(`Error actualizando JSON: ${error.message}`);
     }
   };
 
@@ -201,23 +270,32 @@ const Admin = () => {
     setUploading(true);
     try {
       const fileSize = (selectedFile.size / 1024 / 1024).toFixed(2);
+      console.log(`Starting upload: ${selectedFile.name} (${fileSize} MB)`);
       toast.info(`Subiendo archivo (${fileSize} MB)...`);
       
-      // Subir archivo principal
+      // Generar nombres de archivo únicos
+      const timestamp = Date.now();
+      const sanitizedTitle = newStrip.title.toLowerCase().replace(/[^a-z0-9]/g, '-').substring(0, 30);
       const fileExt = selectedFile.name.split('.').pop();
-      const fileName = `${newStrip.mediaType}-${Date.now()}.${fileExt}`;
+      const fileName = `${sanitizedTitle}-${timestamp}.${fileExt}`;
       const filePath = `public/strips/${fileName}`;
       
-      await uploadFileToGitHub(selectedFile, filePath);
+      console.log(`Uploading main file to: ${filePath}`);
+      toast.info('Subiendo archivo principal...');
+      const mainFileUrl = await uploadFileToGitHub(selectedFile, filePath);
+      toast.success('Archivo principal subido ✓');
       
       // Subir thumbnail si existe
-      let thumbnailUrl = `/Porteria/strips/${fileName}`;
+      let thumbnailUrl = mainFileUrl;
       if (selectedThumbnail && newStrip.mediaType !== 'image') {
         const thumbExt = selectedThumbnail.name.split('.').pop();
-        const thumbName = `thumb-${Date.now()}.${thumbExt}`;
+        const thumbName = `${sanitizedTitle}-thumb-${timestamp}.${thumbExt}`;
         const thumbPath = `public/strips/${thumbName}`;
-        await uploadFileToGitHub(selectedThumbnail, thumbPath);
-        thumbnailUrl = `/Porteria/strips/${thumbName}`;
+        
+        console.log(`Uploading thumbnail to: ${thumbPath}`);
+        toast.info('Subiendo thumbnail...');
+        thumbnailUrl = await uploadFileToGitHub(selectedThumbnail, thumbPath);
+        toast.success('Thumbnail subido ✓');
       }
 
       // Crear nueva tira
@@ -230,15 +308,24 @@ const Admin = () => {
       };
 
       if (newStrip.mediaType === 'video') {
-        newStripData.video_url = `/Porteria/strips/${fileName}`;
+        newStripData.video_url = mainFileUrl;
+        if (!selectedThumbnail) {
+          newStripData.image_url = mainFileUrl; // Usar el video como preview también
+        }
       } else if (newStrip.mediaType === 'audio') {
-        newStripData.audio_url = `/Porteria/strips/${fileName}`;
+        newStripData.audio_url = mainFileUrl;
+        if (!selectedThumbnail) {
+          newStripData.image_url = '/Porteria/strips/audio-placeholder.png'; // Placeholder para audio
+        }
       }
+
+      console.log('New strip data:', newStripData);
 
       // Actualizar JSON
       const updatedStrips = [newStripData, ...strips];
       await updateStripsJSON(updatedStrips);
       
+      // Actualizar UI
       setStrips(updatedStrips);
       setNewStrip({
         title: "",
@@ -248,10 +335,12 @@ const Admin = () => {
       setSelectedFile(null);
       setSelectedThumbnail(null);
       
-      toast.success("¡Tira subida correctamente! 🎉");
+      toast.success("¡Tira subida correctamente! 🎉 Deployment automático en progreso...");
+      toast.info("Recarga la página en 1-2 minutos para ver los cambios", { duration: 5000 });
+      
     } catch (error: any) {
       console.error("Upload error:", error);
-      toast.error(`Error: ${error.message}`);
+      toast.error(`Error: ${error.message}`, { duration: 8000 });
     } finally {
       setUploading(false);
     }
