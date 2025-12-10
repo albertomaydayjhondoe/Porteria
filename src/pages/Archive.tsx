@@ -13,6 +13,9 @@ interface ComicStrip {
   title: string | null;
   image_url: string;
   publish_date: string;
+  media_type?: 'image' | 'video' | 'audio';
+  video_url?: string;
+  audio_url?: string;
 }
 
 const Archive = () => {
