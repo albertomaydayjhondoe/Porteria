@@ -29,215 +29,23 @@ const Index = () => {
 
   const loadStrips = async () => {
     try {
-      // Datos locales como respaldo - ahora con videos
-      const localStrips = [
-        {
-          id: "local-020",
-          title: "Primera Tira",
-          image_url: "/Porteria/strips/strip-020.png",
-          video_url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-12-09"
-        },
-        {
-          id: "local-019",
-          title: "El Misterio del 3º B",
-          image_url: "/Porteria/strips/strip-019.png",
-          video_url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-12-08"
-        },
-        {
-          id: "local-018",
-          title: "Inspección Sanitaria",
-          image_url: "/Porteria/strips/strip-018.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-12-07"
-        },
-        {
-          id: "local-017",
-          title: "La Llave Perdida",
-          image_url: "/Porteria/strips/strip-017.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-12-06"
-        },
-        {
-          id: "local-016",
-          title: "Visita del Técnico",
-          image_url: "/Porteria/strips/strip-016.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-12-05"
-        },
-        {
-          id: "local-015",
-          title: "Día de Mudanza",
-          image_url: "/Porteria/strips/strip-015.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-12-04"
-        },
-        {
-          id: "local-014",
-          title: "Buzón Atascado",
-          image_url: "/Porteria/strips/strip-014.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-12-03"
-        },
-        {
-          id: "local-013",
-          title: "Navidad Anticipada",
-          image_url: "/Porteria/strips/strip-013.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-12-02"
-        },
-        {
-          id: "local-012",
-          title: "La Vecina Chismosa",
-          image_url: "/Porteria/strips/strip-012.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-12-01"
-        },
-        {
-          id: "local-011",
-          title: "Apagón General",
-          image_url: "/Porteria/strips/strip-011.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-30"
-        },
-        {
-          id: "local-010",
-          title: "El Cartero Sustituto",
-          image_url: "/Porteria/strips/strip-010.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-29"
-        },
-        {
-          id: "local-009",
-          title: "Reforma en el Ático",
-          image_url: "/Porteria/strips/strip-009.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-28"
-        },
-        {
-          id: "local-008",
-          title: "El Perro del 5º",
-          image_url: "/Porteria/strips/strip-008.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-27"
-        },
-        {
-          id: "local-007",
-          title: "Fiesta Nocturna",
-          image_url: "/Porteria/strips/strip-007.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-26"
-        },
-        {
-          id: "local-006",
-          title: "Horario de Basura",
-          image_url: "/Porteria/strips/strip-006.png",
-          video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-25"
-        },
-        {
-          id: "local-005",
-          title: "El Ascensor Averiado",
-          image_url: "/Porteria/strips/strip-005.png",
-          video_url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-24"
-        },
-        {
-          id: "local-004",
-          title: "La Conexión WiFi",
-          image_url: "/Porteria/strips/strip-004.png",
-          video_url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_10mb.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-23"
-        },
-        {
-          id: "local-003",
-          title: "Reunión de Consorcio",
-          image_url: "/Porteria/strips/strip-003.png",
-          video_url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_20mb.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-22"
-        },
-        {
-          id: "local-002",
-          title: "Paquetería Confusa",
-          image_url: "/Porteria/strips/strip-002.png",
-          video_url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_30mb.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-21"
-        },
+      // Cargar desde JSON local
+      const response = await fetch('/Porteria/data/strips.json');
+      const data = await response.json();
+      setStrips(data.strips || []);
+    } catch (error) {
+      console.error("Error loading strips:", error);
+      // Fallback con datos básicos
+      const fallbackStrips = [
         {
           id: "local-001",
-          title: "El Nuevo Inquilino",
+          title: "Bienvenido a Porteria",
           image_url: "/Porteria/strips/strip-001.png",
-          video_url: "https://sample-videos.com/zip/20/mp4/SampleVideo_1280x720_1mb.mp4",
-          media_type: 'video' as const,
-          publish_date: "2025-11-20"
-        }
+          media_type: 'image' as const,
+          publish_date: "2025-12-10"
+        },
       ];
-
-      // Si no hay cliente de Supabase (GitHub Pages), usar solo datos locales
-      if (!supabase) {
-        setStrips(localStrips);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("comic_strips")
-        .select("*")
-        .order("publish_date", { ascending: false });
-
-      if (error) {
-        // Si hay error con Supabase, usar datos locales
-        setStrips(localStrips);
-      } else {
-        // Combinar datos de Supabase con locales
-        const allStrips = [...(data || []), ...localStrips];
-        setStrips(allStrips.length > 0 ? allStrips : localStrips);
-      }
-    } catch (error: any) {
-      // Si falla completamente, usar datos locales completos
-      const localStrips = [
-        { id: "local-020", title: "Primera Tira", image_url: "/Porteria/strips/strip-020.png", media_type: 'image' as const, publish_date: "2025-12-09" },
-        { id: "local-019", title: "El Misterio del 3º B", image_url: "/Porteria/strips/strip-019.png", media_type: 'image' as const, publish_date: "2025-12-08" },
-        { id: "local-018", title: "Inspección Sanitaria", image_url: "/Porteria/strips/strip-018.png", media_type: 'image' as const, publish_date: "2025-12-07" },
-        { id: "local-017", title: "La Llave Perdida", image_url: "/Porteria/strips/strip-017.png", media_type: 'image' as const, publish_date: "2025-12-06" },
-        { id: "local-016", title: "Visita del Técnico", image_url: "/Porteria/strips/strip-016.png", media_type: 'image' as const, publish_date: "2025-12-05" },
-        { id: "local-015", title: "Día de Mudanza", image_url: "/Porteria/strips/strip-015.png", media_type: 'image' as const, publish_date: "2025-12-04" },
-        { id: "local-014", title: "Buzón Atascado", image_url: "/Porteria/strips/strip-014.png", media_type: 'image' as const, publish_date: "2025-12-03" },
-        { id: "local-013", title: "Navidad Anticipada", image_url: "/Porteria/strips/strip-013.png", media_type: 'image' as const, publish_date: "2025-12-02" },
-        { id: "local-012", title: "La Vecina Chismosa", image_url: "/Porteria/strips/strip-012.png", media_type: 'image' as const, publish_date: "2025-12-01" },
-        { id: "local-011", title: "Apagón General", image_url: "/Porteria/strips/strip-011.png", media_type: 'image' as const, publish_date: "2025-11-30" },
-        { id: "local-010", title: "El Cartero Sustituto", image_url: "/Porteria/strips/strip-010.png", media_type: 'image' as const, publish_date: "2025-11-29" },
-        { id: "local-009", title: "Reforma en el Ático", image_url: "/Porteria/strips/strip-009.png", media_type: 'image' as const, publish_date: "2025-11-28" },
-        { id: "local-008", title: "El Perro del 5º", image_url: "/Porteria/strips/strip-008.png", media_type: 'image' as const, publish_date: "2025-11-27" },
-        { id: "local-007", title: "Fiesta Nocturna", image_url: "/Porteria/strips/strip-007.png", media_type: 'image' as const, publish_date: "2025-11-26" },
-        { id: "local-006", title: "Horario de Basura", image_url: "/Porteria/strips/strip-006.png", media_type: 'image' as const, publish_date: "2025-11-25" },
-        { id: "local-005", title: "El Ascensor Averiado", image_url: "/Porteria/strips/strip-005.png", media_type: 'image' as const, publish_date: "2025-11-24" },
-        { id: "local-004", title: "La Conexión WiFi", image_url: "/Porteria/strips/strip-004.png", media_type: 'image' as const, publish_date: "2025-11-23" },
-        { id: "local-003", title: "Reunión de Consorcio", image_url: "/Porteria/strips/strip-003.png", media_type: 'image' as const, publish_date: "2025-11-22" },
-        { id: "local-002", title: "Paquetería Confusa", image_url: "/Porteria/strips/strip-002.png", media_type: 'image' as const, publish_date: "2025-11-21" },
-        { id: "local-001", title: "El Nuevo Inquilino", image_url: "/Porteria/strips/strip-001.png", media_type: 'image' as const, publish_date: "2025-11-20" }
-      ];
-      setStrips(localStrips);
-      console.log("Usando datos locales:", error);
+      setStrips(fallbackStrips);
     } finally {
       setLoading(false);
     }
