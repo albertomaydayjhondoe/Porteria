@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="es">
+<<<<<<< HEAD
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -37,4 +38,363 @@
   <body>
     <div id="root"></div>
   </body>
+=======
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paperboy — Tiras Cómicas</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #e4e4e7;
+            background: #09090b;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: #18181b;
+            border-bottom: 2px solid #3f3f46;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fafafa;
+            text-decoration: none;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            color: #a1a1aa;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fafafa;
+            border-bottom-color: #8b5cf6;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #18181b 0%, #27272a 50%, #3f3f46 100%);
+            color: white;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #3f3f46;
+        }
+        
+        .hero h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+        
+        .main-strip {
+            background: #18181b;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            border: 1px solid #27272a;
+        }
+        
+        .strip-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .strip-date {
+            color: #a1a1aa;
+            margin-bottom: 1.5rem;
+        }
+        
+        .strip-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .strip-image {
+            width: 100%;
+            display: block;
+        }
+        
+        .archive {
+            margin-top: 3rem;
+        }
+        
+        .archive h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .strip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .strip-card {
+            background: #18181b;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: 1px solid #27272a;
+        }
+        
+        .strip-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            border-color: #8b5cf6;
+        }
+        
+        .strip-thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            background: #000;
+        }
+        
+        .strip-info {
+            padding: 1rem;
+        }
+        
+        .strip-card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .strip-card-date {
+            color: #a1a1aa;
+            font-size: 0.9rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #71717a;
+            border-top: 1px solid #3f3f46;
+            margin-top: 4rem;
+            background: #18181b;
+        }
+        
+        /* Scrollbar dark theme */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #18181b;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+        
+        ::selection {
+            background: rgba(139, 92, 246, 0.3);
+            color: #fafafa;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="/" class="logo">Paperboy</a>
+            <nav class="nav">
+                <a href="/" class="nav-link active">Inicio</a>
+                <a href="#archivo" class="nav-link" onclick="showArchive(); return false;">Archivo</a>
+                <a href="/Porteria/porteria.html" class="nav-link">La Portería 🎬</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="container">
+            <h1>Paperboy</h1>
+            <p>Tiras cómicas diarias</p>
+        </div>
+    </div>
+
+    <div id="home-view" class="container">
+        <div class="main-strip">
+            <h2 class="strip-title" id="current-title">Cargando...</h2>
+            <p class="strip-date" id="current-date"></p>
+            <div class="strip-container">
+                <img id="current-strip" class="strip-image" src="" alt="Tira cómica">
+            </div>
+        </div>
+    </div>
+
+    <div id="archive-view" class="container hidden">
+        <div class="archive">
+            <h2>Archivo de Tiras</h2>
+            <div class="strip-grid" id="strip-grid"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Paperboy. Tiras cómicas diarias.</p>
+        </div>
+    </footer>
+
+    <script>
+        let strips = [];
+
+        async function loadStrips() {
+            try {
+                const response = await fetch('/Porteria/data/strips.json');
+                const data = await response.json();
+                strips = (data.strips || []).filter(s => s.media_type === 'image');
+                strips.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
+                console.log(`✅ Loaded ${strips.length} image strips`);
+                renderCurrentStrip();
+            } catch (error) {
+                console.error('❌ Error loading strips:', error);
+                document.getElementById('current-title').textContent = 'Error al cargar las tiras';
+            }
+        }
+
+        function renderCurrentStrip() {
+            if (strips.length === 0) {
+                document.getElementById('current-title').textContent = 'No hay tiras disponibles';
+                document.getElementById('current-date').textContent = '';
+                document.getElementById('current-strip').src = '';
+                return;
+            }
+            
+            const latest = strips[0];
+            document.getElementById('current-title').textContent = latest.title;
+            document.getElementById('current-date').textContent = formatDate(latest.publish_date);
+            document.getElementById('current-strip').src = latest.image_url;
+        }
+
+        function renderArchive() {
+            const grid = document.getElementById('strip-grid');
+            
+            if (strips.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">No hay tiras disponibles</p>';
+                return;
+            }
+            
+            grid.innerHTML = strips.map(strip => `
+                <div class="strip-card" onclick="viewStrip('${strip.id}')">
+                    <img class="strip-thumbnail" src="${strip.image_url}" alt="${strip.title}">
+                    <div class="strip-info">
+                        <div class="strip-card-title">${strip.title}</div>
+                        <div class="strip-card-date">${formatDate(strip.publish_date)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewStrip(id) {
+            const strip = strips.find(s => s.id === id);
+            if (strip) {
+                strips = [strip, ...strips.filter(s => s.id !== id)];
+                showHome();
+            }
+        }
+
+        function showHome() {
+            document.getElementById('home-view').classList.remove('hidden');
+            document.getElementById('archive-view').classList.add('hidden');
+            updateNavLinks(0);
+            renderCurrentStrip();
+        }
+
+        function showArchive() {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('archive-view').classList.remove('hidden');
+            updateNavLinks(1);
+            renderArchive();
+        }
+
+        function updateNavLinks(activeIndex) {
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach((link, index) => {
+                if (index === activeIndex) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', loadStrips);
+    </script>
+</body>
+>>>>>>> d5ad9a4 (feat: Separate image strips and video content)
 </html>
