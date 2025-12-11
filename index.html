@@ -464,9 +464,23 @@
                     });
                 
                 if (uploadError) {
-                    if (uploadError.message.includes('Bucket not found') || uploadError.message.includes('bucket')) {
-                        throw new Error('❌ Bucket "comic-videos" no existe. Ve al Dashboard de Supabase → Storage → Create bucket → Nombre: "comic-videos" (público)');
+                    console.error('Upload error details:', uploadError);
+                    
+                    if (uploadError.message.includes('Bucket not found') || 
+                        uploadError.message.includes('bucket') || 
+                        uploadError.statusCode === '404') {
+                        
+                        throw new Error('❌ BUCKET NO EXISTE\n\n' +
+                            'El bucket "comic-videos" no ha sido creado en Supabase.\n\n' +
+                            'SOLUCIÓN:\n' +
+                            '1. Ve a: https://supabase.com/dashboard/project/sxjwoyxwgmmsaqczvjpd/storage/buckets\n' +
+                            '2. Click "Create bucket"\n' +
+                            '3. Name: comic-videos\n' +
+                            '4. Public: ✅ YES\n' +
+                            '5. File size limit: 157286400 (150MB)\n' +
+                            '6. Recarga esta página e intenta de nuevo');
                     }
+                    
                     throw new Error('Error subiendo archivo: ' + uploadError.message);
                 }
                 
@@ -524,14 +538,22 @@
                 
             } catch (error) {
                 console.error('❌ Upload error:', error);
-                statusSpan.textContent = '❌ Error: ' + error.message;
+                
+                // Show error in UI
+                statusSpan.innerHTML = error.message.replace(/\n/g, '<br>');
                 progressBar.style.background = '#dc3545';
                 
+                // Show alert for critical errors
+                if (error.message.includes('BUCKET NO EXISTE')) {
+                    alert(error.message);
+                }
+                
+                // Keep error visible longer
                 setTimeout(() => {
                     progressDiv.style.display = 'none';
                     progressBar.style.background = '#007bff';
                     progressBar.style.width = '0%';
-                }, 3000);
+                }, 10000);
             }
         }
         
@@ -645,12 +667,47 @@
                 if (comicVideosBucket) {
                     const message = `✅ Bucket "comic-videos" encontrado (público: ${comicVideosBucket.public})`;
                     console.log(message);
-                    if (statusDiv) statusDiv.innerHTML = message;
+                    if (statusDiv) {
+                        statusDiv.innerHTML = `${message}<br><br>🧪 Probando upload...`;
+                        
+                        // Test upload
+                        try {
+                            const testFile = new Blob(['test'], { type: 'text/plain' });
+                            const testPath = `test/bucket_test_${Date.now()}.txt`;
+                            
+                            const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                                .from('comic-videos')
+                                .upload(testPath, testFile);
+                            
+                            if (uploadError) {
+                                statusDiv.innerHTML = `✅ Bucket existe pero hay error de upload: ${uploadError.message}<br><br>💡 Verifica políticas RLS en Storage`;
+                            } else {
+                                statusDiv.innerHTML = `✅ BUCKET FUNCIONAL! Upload test exitoso<br>📁 File: ${uploadData.path}`;
+                                
+                                // Clean up test file
+                                await supabaseClient.storage.from('comic-videos').remove([testPath]);
+                                statusDiv.innerHTML += '<br>🗑️ Test file limpiado';
+                            }
+                        } catch (testError) {
+                            statusDiv.innerHTML = `✅ Bucket existe pero test falló: ${testError.message}`;
+                        }
+                    }
                 } else {
                     const message = `❌ Bucket "comic-videos" NO encontrado. Buckets existentes: [${bucketNames.join(', ')}]`;
                     console.log(message);
                     if (statusDiv) {
-                        statusDiv.innerHTML = message + '<br><br>📝 Para crear el bucket:<br>1. Ve al Dashboard de Supabase<br>2. Storage → Create bucket<br>3. Nombre: "comic-videos", Público: ✅';
+                        statusDiv.innerHTML = `${message}<br><br>` +
+                            `<div style="background: #fff3cd; padding: 1rem; border-radius: 4px; margin-top: 1rem;">` +
+                            `<strong>🔧 CREAR BUCKET MANUALMENTE:</strong><br>` +
+                            `1. <a href="https://supabase.com/dashboard/project/sxjwoyxwgmmsaqczvjpd/storage/buckets" target="_blank" style="color: #007bff;">Abrir Dashboard de Supabase</a><br>` +
+                            `2. Click "Create bucket"<br>` +
+                            `3. Name: <code>comic-videos</code><br>` +
+                            `4. Public: ✅ YES<br>` +
+                            `5. File size limit: <code>157286400</code> (150MB)<br>` +
+                            `6. Allowed MIME types: <code>video/mp4, video/webm, video/quicktime, video/x-msvideo</code><br>` +
+                            `7. Click "Create bucket"<br>` +
+                            `8. Vuelve aquí y click "🔄 Verificar Bucket"` +
+                            `</div>`;
                     }
                 }
             } catch (error) {
