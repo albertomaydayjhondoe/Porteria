@@ -47,39 +47,39 @@ npx serve .
 - ✅ Eliminar videos
 - ✅ Persistencia en localStorage
 
-## 💾 Almacenamiento
+## 💾 Almacenamiento Permanente con IndexedDB
 
-### LocalStorage
-Los datos se guardan en el navegador:
-- **Videos**: `porteria_videos` - Lista de videos con URLs
+### ✨ Nueva Implementación: Persistencia Automática
+
+Los videos ahora se guardan **permanentemente** usando **IndexedDB**:
+
+#### LocalStorage (Metadatos)
 - **Usuarios**: `porteria_users` - Credenciales de admin
 - **Sesión**: `porteria_current_user` - Usuario actual
 
-### Archivos
-Los videos se guardan como **Object URLs** en el navegador:
-- No requieren servidor
-- Persisten durante la sesión
-- Se pierden al recargar (son referencias temporales)
+#### IndexedDB (Videos Permanentes)
+- **Base de datos**: `PorteriaDB`
+- **Store de videos**: Metadatos (título, fecha, tamaño)
+- **Store de archivos**: Videos completos en binario (Blob)
 
-## ⚠️ Limitaciones
+### ✅ Ventajas del Nuevo Sistema
 
-### Videos Temporales
-Los videos subidos usan `URL.createObjectURL()`:
-- ✅ Funcionan inmediatamente
-- ✅ No requieren servidor
-- ❌ Se pierden al recargar la página
-- ❌ No se comparten entre dispositivos
+- ✅ **Permanente**: Los videos NO se pierden al recargar
+- ✅ **Automático**: Gestión automática de archivos, sin copias manuales
+- ✅ **Gran capacidad**: Hasta 250MB-1GB dependiendo del navegador
+- ✅ **Sin servidor**: Todo funciona localmente en tu navegador
+- ✅ **Rápido**: Acceso instantáneo a los videos
 
-### Solución para Persistencia
-Para videos permanentes, copia manualmente a `public/strips/`:
+### 📊 Capacidad de Almacenamiento
 
-```bash
-# 1. Subir video desde el admin
-# 2. Copiar el archivo físico a:
-cp video.mp4 public/strips/video.mp4
+| Navegador | Capacidad Típica |
+|-----------|------------------|
+| Chrome    | ~250MB - 1GB     |
+| Firefox   | ~250MB - 1GB     |
+| Safari    | ~50MB - 200MB    |
+| Edge      | ~250MB - 1GB     |
 
-# 3. El video estará disponible permanentemente
-```
+**Límite por video**: 150MB (configurable)
 
 ## 🔧 Características
 
@@ -136,12 +136,26 @@ localStorage.clear();
 3. **Navegadores**: Chrome, Firefox, Safari, Edge modernos
 4. **Almacenamiento**: LocalStorage (5-10MB) + Object URLs (ilimitado durante sesión)
 
-## 🎯 Próximos Pasos
+## 🎯 Gestión de Almacenamiento
 
-Para hacer los videos permanentes:
-1. Usar IndexedDB en lugar de Object URLs
-2. O implementar un servidor simple para almacenamiento
-3. O usar servicios de almacenamiento externo (Dropbox, Google Drive)
+### Verificar Espacio Usado
+
+Abre la consola del navegador (F12) y ejecuta:
+
+```javascript
+// Ver cuántos videos tienes
+navigator.storage.estimate().then(estimate => {
+    console.log(`Usado: ${(estimate.usage / 1024 / 1024).toFixed(2)} MB`);
+    console.log(`Disponible: ${(estimate.quota / 1024 / 1024).toFixed(2)} MB`);
+});
+```
+
+### Liberar Espacio
+
+Si alcanzas el límite de almacenamiento:
+1. Ve al panel **Admin**
+2. Elimina videos que no necesites
+3. El espacio se libera automáticamente
 
 ## 🚀 Deploy Local
 
