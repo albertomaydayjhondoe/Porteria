@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paperboy — La Portería | Video Player Local</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: #fff;
+            border-bottom: 2px solid #000;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #000;
+            text-decoration: none;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: #000;
+            border-bottom-color: #000;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .hero h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+        
+        .main-video {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .video-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .video-date {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .video-player {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        video {
+            width: 100%;
+            display: block;
+        }
+        
+        .archive {
+            margin-top: 3rem;
+        }
+        
+        .archive h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .video-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+        
+        .video-info {
+            padding: 1rem;
+        }
+        
+        .video-card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .video-card-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .admin-panel {
+            background: #f0f8ff;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .admin-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        input[type="email"],
+        input[type="password"],
+        input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button.success {
+            background: #28a745;
+        }
+        
+        button.success:hover {
+            background: #218838;
+        }
+        
+        button.danger {
+            background: #dc3545;
+        }
+        
+        button.danger:hover {
+            background: #c82333;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo" onclick="showHome(); return false;">Paperboy — La Portería</a>
+            <nav class="nav">
+                <a href="#" class="nav-link active" onclick="showHome(); return false;">Inicio</a>
+                <a href="#" class="nav-link" onclick="showArchive(); return false;">Archivo</a>
+                <a href="#" class="nav-link" onclick="showAdmin(); return false;">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="container">
+            <h1>🎬 Video Player Local</h1>
+            <p>Sistema de gestión de videos completamente local</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Home View -->
+        <div id="home-view">
+            <div class="main-video" id="main-video">
+                <div class="video-title" id="current-title">Cargando...</div>
+                <div class="video-date" id="current-date"></div>
+                <div class="video-player">
+                    <video id="current-video" controls>
+                        <source src="" type="video/mp4">
+                        Tu navegador no soporta video HTML5.
+                    </video>
+                </div>
+            </div>
+        </div>
+
+        <!-- Archive View -->
+        <div id="archive-view" class="hidden">
+            <h2 class="archive h2">📚 Archivo de Videos</h2>
+            <div class="video-grid" id="video-grid"></div>
+        </div>
+
+        <!-- Admin View -->
+        <div id="admin-view" class="hidden">
+            <!-- Login Form -->
+            <div id="login-form" class="admin-panel">
+                <h3 class="admin-title">🔐 Acceso de Administrador</h3>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="login-email" value="sampayo@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" id="login-password" value="administrador">
+                </div>
+                <button onclick="login()">Iniciar Sesión</button>
+            </div>
+
+            <!-- Admin Panel -->
+            <div id="admin-panel" class="hidden">
+                <div class="admin-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 class="admin-title" style="margin: 0;">📤 Subir Nuevo Video</h3>
+                        <button class="danger" onclick="logout()">Cerrar Sesión</button>
+                    </div>
+                    
+                    <div id="upload-alert"></div>
+                    
+                    <div class="form-group">
+                        <label>Título del Video:</label>
+                        <input type="text" id="video-title" placeholder="Ej: Video #25 - Comedia Diaria">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Fecha de Publicación:</label>
+                        <input type="date" id="video-date">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Archivo de Video (máx. 150MB):</label>
+                        <input type="file" id="video-file" accept="video/*">
+                        <small style="color: #666;">Formatos: MP4, WebM, MOV, AVI</small>
+                    </div>
+                    
+                    <button class="success" onclick="uploadVideo()">📤 Subir Video</button>
+                </div>
+
+                <div class="admin-panel" style="margin-top: 2rem;">
+                    <h3 class="admin-title">🎬 Videos Subidos</h3>
+                    <div id="admin-video-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Paperboy — La Portería. Video Player Local.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Local Storage Keys
+        const VIDEOS_KEY = 'porteria_videos';
+        const USERS_KEY = 'porteria_users';
+        const CURRENT_USER_KEY = 'porteria_current_user';
+
+        // Initialize app
+        let videos = [];
+        let currentUser = null;
+
+        function initApp() {
+            console.log('🚀 Initializing local app...');
+            
+            // Initialize users
+            if (!localStorage.getItem(USERS_KEY)) {
+                const users = [{
+                    email: 'sampayo@gmail.com',
+                    password: 'administrador',
+                    id: 'admin-001',
+                    role: 'admin'
+                }];
+                localStorage.setItem(USERS_KEY, JSON.stringify(users));
+            }
+            
+            // Load videos
+            loadVideos();
+            
+            // Check if user is logged in
+            const storedUser = localStorage.getItem(CURRENT_USER_KEY);
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+            }
+            
+            // Set current date
+            document.getElementById('video-date').valueAsDate = new Date();
+            
+            // Show home by default
+            showHome();
+        }
+
+        function loadVideos() {
+            const stored = localStorage.getItem(VIDEOS_KEY);
+            videos = stored ? JSON.parse(stored) : [];
+            console.log(`✅ Loaded ${videos.length} videos from local storage`);
+        }
+
+        function saveVideos() {
+            localStorage.setItem(VIDEOS_KEY, JSON.stringify(videos));
+            console.log('💾 Videos saved to local storage');
+        }
+
+        // Navigation
+        function showHome() {
+            document.getElementById('home-view').classList.remove('hidden');
+            document.getElementById('archive-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+            
+            updateNavLinks(0);
+            renderCurrentVideo();
+        }
+
+        function showArchive() {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('archive-view').classList.remove('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+            
+            updateNavLinks(1);
+            renderArchive();
+        }
+
+        function showAdmin() {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('archive-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.remove('hidden');
+            
+            updateNavLinks(2);
+            
+            if (currentUser) {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                renderAdminVideos();
+            } else {
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
+            }
+        }
+
+        function updateNavLinks(activeIndex) {
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach((link, index) => {
+                if (index === activeIndex) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Render functions
+        function renderCurrentVideo() {
+            if (videos.length === 0) {
+                document.getElementById('current-title').textContent = 'No hay videos disponibles';
+                document.getElementById('current-date').textContent = '';
+                document.getElementById('current-video').src = '';
+                return;
+            }
+            
+            const latest = videos[0];
+            document.getElementById('current-title').textContent = latest.title;
+            document.getElementById('current-date').textContent = formatDate(latest.date);
+            document.getElementById('current-video').src = latest.videoUrl;
+        }
+
+        function renderArchive() {
+            const grid = document.getElementById('video-grid');
+            
+            if (videos.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">No hay videos disponibles</p>';
+                return;
+            }
+            
+            grid.innerHTML = videos.map(video => `
+                <div class="video-card" onclick="playVideo('${video.id}')">
+                    <video class="video-thumbnail" src="${video.videoUrl}" preload="metadata"></video>
+                    <div class="video-info">
+                        <div class="video-card-title">${video.title}</div>
+                        <div class="video-card-date">${formatDate(video.date)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminVideos() {
+            const list = document.getElementById('admin-video-list');
+            
+            if (videos.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #666;">No hay videos subidos</p>';
+                return;
+            }
+            
+            list.innerHTML = videos.map(video => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #ddd;">
+                    <div>
+                        <strong>${video.title}</strong><br>
+                        <small style="color: #666;">${formatDate(video.date)}</small>
+                    </div>
+                    <button class="danger" onclick="deleteVideo('${video.id}')">🗑️ Eliminar</button>
+                </div>
+            `).join('');
+        }
+
+        function playVideo(id) {
+            const video = videos.find(v => v.id === id);
+            if (video) {
+                // Move to top
+                videos = [video, ...videos.filter(v => v.id !== id)];
+                saveVideos();
+                showHome();
+            }
+        }
+
+        // Auth functions
+        function login() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            const usersJson = localStorage.getItem(USERS_KEY);
+            const users = usersJson ? JSON.parse(usersJson) : [];
+            
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = {
+                    email: user.email,
+                    id: user.id,
+                    role: user.role
+                };
+                localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+                console.log('✅ Login successful:', currentUser.email);
+                showAdmin();
+            } else {
+                alert('❌ Credenciales inválidas');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem(CURRENT_USER_KEY);
+            console.log('👋 Logged out');
+            showAdmin();
+        }
+
+        // Upload function
+        function uploadVideo() {
+            const title = document.getElementById('video-title').value.trim();
+            const date = document.getElementById('video-date').value;
+            const fileInput = document.getElementById('video-file');
+            const file = fileInput.files[0];
+            
+            const alertDiv = document.getElementById('upload-alert');
+            
+            // Validation
+            if (!title) {
+                showAlert('❌ Por favor ingresa un título', 'error');
+                return;
+            }
+            
+            if (!file) {
+                showAlert('❌ Por favor selecciona un archivo de video', 'error');
+                return;
+            }
+            
+            if (file.size > 150 * 1024 * 1024) {
+                showAlert('❌ El archivo es muy grande. Máximo 150MB permitido.', 'error');
+                return;
+            }
+            
+            // Create object URL for the video
+            const videoUrl = URL.createObjectURL(file);
+            
+            // Create video object
+            const newVideo = {
+                id: 'video_' + Date.now(),
+                title: title,
+                date: date,
+                videoUrl: videoUrl,
+                fileName: file.name,
+                fileSize: file.size,
+                fileType: file.type
+            };
+            
+            // Add to beginning of array
+            videos.unshift(newVideo);
+            saveVideos();
+            
+            showAlert('✅ Video subido exitosamente', 'success');
+            
+            // Clear form
+            document.getElementById('video-title').value = '';
+            document.getElementById('video-file').value = '';
+            
+            // Refresh admin list
+            renderAdminVideos();
+            
+            console.log('✅ Video uploaded:', newVideo);
+        }
+
+        function deleteVideo(id) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este video?')) {
+                return;
+            }
+            
+            videos = videos.filter(v => v.id !== id);
+            saveVideos();
+            
+            showAlert('✅ Video eliminado exitosamente', 'success');
+            renderAdminVideos();
+            
+            console.log('🗑️ Video deleted:', id);
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('upload-alert');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
