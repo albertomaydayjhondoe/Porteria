@@ -1,6 +1,14 @@
 {
   "strips": [
     {
+      "id": "strip-022",
+      "title": "Claqueta",
+      "image_url": "./strips/image-2025-12-15-1765790075514.png",
+      "video_url": null,
+      "media_type": "image",
+      "publish_date": "2025-12-15"
+    },
+    {
       "id": "mj04x675v96jx94scu",
       "title": "El Nuevo Inquilino",
       "publish_date": "2025-12-09",
@@ -14,5 +22,6 @@
       "publish_date": "2025-12-10",
       "media_type": "image"
     }
-  ]
+  ],
+  "last_updated": "2025-12-15T09:14:45.880Z"
 }
