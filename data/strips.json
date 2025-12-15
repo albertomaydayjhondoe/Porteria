@@ -2,6 +2,14 @@
   "strips": [
     {
       "id": "strip-022",
+      "title": "It´s gas",
+      "image_url": "./strips/image-2025-12-15-1765792998854.png",
+      "video_url": null,
+      "media_type": "image",
+      "publish_date": "2025-12-15"
+    },
+    {
+      "id": "strip-022",
       "title": "Claqueta",
       "image_url": "./strips/image-2025-12-15-1765790075514.png",
       "video_url": null,
@@ -23,5 +31,5 @@
       "media_type": "image"
     }
   ],
-  "last_updated": "2025-12-15T09:14:45.880Z"
+  "last_updated": "2025-12-15T10:03:29.499Z"
 }
